@@ -1,0 +1,12 @@
+LICENSE.md
+README.md
+setup.py
+pywfe/__init__.py
+pywfe/model.py
+pywfe.egg-info/PKG-INFO
+pywfe.egg-info/SOURCES.txt
+pywfe.egg-info/dependency_links.txt
+pywfe.egg-info/top_level.txt
+pywfe/core/__init__.py
+pywfe/core/eigensolvers.py
+pywfe/core/model_setup.py

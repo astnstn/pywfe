@@ -1,0 +1,5 @@
+Model Initilisation
+========
+
+.. automodule:: pywfe.core.model_init
+   :members:

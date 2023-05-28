@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>core &#8212; pywfe  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to pywfe’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-pywfe.core.model_setup">
+<span id="core"></span><h1>core<a class="headerlink" href="#module-pywfe.core.model_setup" title="Permalink to this heading">¶</a></h1>
+<section id="model-setup">
+<h2>model_setup<a class="headerlink" href="#model-setup" title="Permalink to this heading">¶</a></h2>
+<p>This module contains the functions for setting up the WFE model.</p>
+<dl class="simple">
+<dt>This includes:</dt><dd><ul class="simple">
+<li><p>Creating the relevant <cite>dof</cite> dict data</p></li>
+<li><p>Applying the boundary conditions</p></li>
+<li><p>Sorting M, K and dofs to left and right faces</p></li>
+<li><p>Creating <cite>node</cite> dict data</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.apply_boundary_conditions">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">apply_boundary_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.apply_boundary_conditions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies boundary conditions according to null constraint matrices.
+Resorts and removes degrees of freedom as needed. (NOT FINISHED)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>K</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+<dt><strong>null</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float.</p>
+</dd>
+<dt><strong>nullf</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>K</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.create_node_dict">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">create_node_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.create_node_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates node dictionary for nodes on the left face of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>node</strong><span class="classifier">dict</span></dt><dd><p>node dictionary.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.generate_dof_info">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">generate_dof_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.generate_dof_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the <cite>dof</cite> dictionary, including which face each dof is on.
+Also rolls sets the waveguide axis and created index array if none given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">TYPE, optional</span></dt><dd><p>DESCRIPTION. The default is 0.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dof</strong><span class="classifier">TYPE</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.order_system_faces">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">order_system_faces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.order_system_faces" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>K</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>K</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.substructure_matrices">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">substructure_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.substructure_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates dictionaries for the submatrices of K and M</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>K</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
+</dd>
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>K_sub</strong><span class="classifier">dict</span></dt><dd><p>dictionary of substructured stiffness matrices.</p>
+</dd>
+<dt><strong>M_sub</strong><span class="classifier">dict</span></dt><dd><p>dictionary of substructured mass matrices.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<span class="target" id="module-pywfe.core.eigensolvers"></span><section id="eigensolvers">
+<h2>Eigensolvers<a class="headerlink" href="#eigensolvers" title="Permalink to this heading">¶</a></h2>
+<p>This module contains different solvers for the WFE eigenproblem.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.eigensolvers.transfer_matrix">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.eigensolvers.</span></span><span class="sig-name descname"><span class="pre">transfer_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">DSM</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.eigensolvers.transfer_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classical transfer matrix formulation of the WFE eigenproblem.</p>
+<p>The transfer function is defined as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{T} = \begin{bmatrix}
+-D_{LR}^{-1} D_{LL} &amp; D_{LR}^{-1} \\
+-D_{RL}+D_{RR} D_{LR}^{-1} D_{LL} &amp; -D_{RR} D_{LR}^{-1}
+\end{bmatrix}\end{split}\]</div>
+<p>which leads to the eigenvalue problem</p>
+<div class="math notranslate nohighlight">
+\[T \mathbf{\Phi} = \lambda \mathbf{\Phi}\]</div>
+<p>The left eigenvectors can be found by considering <span class="math notranslate nohighlight">\(\mathbf{T}^{T}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>DSM</strong><span class="classifier">(N,N) ndarray (float or complex)</span></dt><dd><p>The dynamic stiffness matrix of the system. 
+NxN array of type float or complex.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>vals</strong><span class="classifier">ndarray</span></dt><dd><p>1-D array of length N type complex.</p>
+</dd>
+<dt><strong>left_eigenvectors</strong><span class="classifier">ndarray</span></dt><dd><p>NxN array of type float or complex.
+Column i is vector corresponding to vals[i]</p>
+</dd>
+<dt><strong>right_eigenvectors</strong><span class="classifier">ndarray</span></dt><dd><p>NxN array of type float or complex.
+Column i is vector corresponding to vals[i]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pywfe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#model-setup">model_setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eigensolvers">Eigensolvers</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to pywfe’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Austen Stone.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/core.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
