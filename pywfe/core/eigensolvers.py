@@ -70,4 +70,33 @@ def transfer_matrix(DSM):
     return eigenvalues, right_eigenvectors, left_eigenvectors
 
 
-solver = {"transfer_matrix": transfer_matrix}
+def polynomial(DSM):
+
+    n = len(DSM)
+
+    D_LL = DSM[:n//2, :n//2]
+    D_LR = DSM[:n//2, n//2:]
+    D_RL = DSM[n//2:, :n//2]
+    D_RR = DSM[n//2:, n//2:]
+
+    B = np.zeros_like(DSM)
+
+    # B[:n//2, :n//2] =
+    B[:n//2, n//2:] = np.identity(n//2)
+    B[n//2:, :n//2] = -np.linalg.inv(D_LR) @ D_RL
+    B[n//2:, n//2:] = -np.linalg.inv(D_LR) @ (D_LL + D_RR)
+
+    vals, vecs, left_vecs = scipy.linalg.eig(B, left=True)
+
+    for i in range(vecs.shape[-1]):
+
+        vecs[n//2:, i] = vecs[n//2:, i]/vals[i]
+
+        vecs[n//2:, i] = (D_LL + vals[i]*D_LR) @ vecs[n//2:, i]
+        vecs[:, i] = -vecs[:, i]/np.linalg.norm(vecs[:, i])
+
+    return vals, vecs, left_vecs
+
+
+solver = {"transfer_matrix": transfer_matrix,
+          "polynomial": polynomial}

@@ -43,3 +43,7 @@ def wavenumber(f, DSM, delta, direction="both", solver="transfer_matrix"):
             k = -np.log(negative_eigenvalues)/(1j*delta)
 
             return k
+
+        else:
+            raise Exception(
+                "invalid direction, choose positive, negative or both")

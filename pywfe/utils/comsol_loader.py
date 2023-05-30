@@ -12,7 +12,7 @@ import numpy as np
 import pywfe
 
 
-def load_comsol(folder, axis = 0, logging_level = 20):
+def load_comsol(folder, axis = 0, logging_level = 20, solver = 'transfer_matrix'):
     """
 
     Parameters
@@ -65,7 +65,8 @@ def load_comsol(folder, axis = 0, logging_level = 20):
                         null = null,
                         nullf = nullf,
                         axis=axis,
-                        logging_level = 20)
+                        logging_level = 20,
+                        solver = solver)
 
     
 def comsol_i2j(filename, skiprows=0):

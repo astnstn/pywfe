@@ -9,13 +9,19 @@ WFE functionality.
 import logging
 from collections.abc import Iterable
 import numpy as np
+from pywfe.types import Eigensolution, Boundaries
 from pywfe.core import model_setup
 from pywfe.core import eigensolvers
+from pywfe.core import boundary_conditions
 from pywfe.core.classify_modes import sort_eigensolution
 from pywfe.core import dispersion_relation
+from pywfe.core.forced_problem import calculate_excited_amplitudes
+from pywfe.core.forced_problem import calculate_propagated_amplitudes
+from pywfe.core.forced_problem import calculate_modal_displacements
 
 # solver dictionary which contains all the forms of the eigenproblem
 solver = eigensolvers.solver
+conditions = boundary_conditions.conditions
 
 
 class Model:
@@ -25,14 +31,20 @@ class Model:
                  axis=0,
                  logging_level=20, solver="transfer_matrix"):
 
+        K, M = K.astype('complex'), M.astype('complex')
+
         # chooses what form of the eigenproblem to solve
         self.solver = solver
 
         # Set up logging
+
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+
         logging.basicConfig(format=('%(asctime)s %(levelname)-8s'
                                     '[%(filename)s:%(lineno)d] %(message)s'),
                             datefmt='%Y-%m-%d:%H:%M:%S',
-                            level=logging_level)
+                            level=logging.DEBUG)
 
         logging.info("Initalising WFE model")
 
@@ -76,6 +88,29 @@ class Model:
 
         [logging.info(line) for line in init_debug]
 
+        self.frequency = -1
+        self.eigensolution = ()
+        self.force = np.zeros((self.N//2))
+        self.x_e = 0
+        self.L = 1
+
+        zero_boundary = np.zeros((self.N//2, self.N//2))
+        self.boundaries = Boundaries(*[zero_boundary]*4)
+
+        logging.debug("debugging...")
+
+    def set_boundary(self, which, condition):
+
+        null = np.zeros((self.N//2, self.N//2))
+
+        if which == "right":
+            self.boundaries = Boundaries(*conditions[condition](self.N//2),
+                                         null, null)
+
+        if which == "left":
+            self.boundaries = Boundaries(
+                null, null, *conditions[condition](self.N//2))
+
     def form_dsm(self, f):
         """
         Forms the DSM of the model at a given frequency
@@ -99,50 +134,61 @@ class Model:
 
         return DSM['EE'] - DSM['EI'] @ np.linalg.inv(DSM['II']) @ DSM['IE']
 
-    def eigensolve(self, f):
-        """
-        Solves the eigenproblem for the model at a given frequency
+    def generate_eigensolution(self, f):
 
-        Parameters
-        ----------
-        f : float
-            frequency.
+        if f == None or f == self.frequency:
 
-        Returns
-        -------
-        eigenvalues : ndarray
-            The unsorted eigenvalues len(ndof) type complex.
-        right_eigenvectors : ndarray
-            Unsorted right eigenvectors (ndof, ndof) type complex.
-        left_eigenvectors : ndarray
-            Unsorted left eigenvectors (ndof, ndof) type complex.
+            return self.eigensolution
 
-        """
+        else:
+            self.frequency = f
 
-        DSM = self.form_dsm(f)
+            DSM = self.form_dsm(f)
 
-        (eigenvalues,
-         right_eigenvectors,
-         left_eigenvectors) = solver[self.solver](DSM)
+            unsorted_solution = solver[self.solver](DSM)
 
-        return eigenvalues, right_eigenvectors, left_eigenvectors
+            sorted_solution = sort_eigensolution(f, *unsorted_solution)
 
-    def eigensort(self, f):
+            self.eigensolution = sorted_solution
 
-        eigenvalues, right_eigenvectors, left_eigenvectors = self.eigensolve(f)
+            return sorted_solution
 
-        (positive_eigenvalues,
-         negative_eigenvalues,
-         positive_right_eigenvectors,
-         negative_right_eigenvectors,
-         positive_left_eigenvectors,
-         negative_left_eigenvectors) = sort_eigensolution(f, eigenvalues,
-                                                          right_eigenvectors,
-                                                          left_eigenvectors)
+    def excited_amplitudes(self, f=None):
 
-        return (positive_eigenvalues, negative_eigenvalues,
-                positive_right_eigenvectors, negative_right_eigenvectors,
-                positive_left_eigenvectors, negative_left_eigenvectors)
+        return calculate_excited_amplitudes(self.generate_eigensolution(f),
+                                            self.force)
+
+    def propagated_amplitudes(self, x_r, f=None):
+
+        sol = self.generate_eigensolution(f=f)
+
+        return calculate_propagated_amplitudes(sol,
+                                               self.delta,
+                                               self.L,
+                                               self.force,
+                                               self.boundaries,
+                                               x_r,
+                                               x_e=self.x_e)
+
+    def modal_displacements(self, x_r, f=None):
+
+        sol = self.generate_eigensolution(f=f)
+
+        return calculate_modal_displacements(sol,
+                                             self.delta,
+                                             self.L,
+                                             self.force,
+                                             self.boundaries,
+                                             x_r,
+                                             x_e=self.x_e)
+
+    def displacements(self, x_r, f=None):
+
+        q_j_plus, q_j_minus = self.modal_displacements(x_r, f=f)
+
+        q_j = q_j_plus + q_j_minus
+
+        return np.sum(q_j, axis=-1)
 
     def wavenumbers(self, f, direction="both", imag_threshold=1):
 
@@ -157,6 +203,8 @@ class Model:
         else:
             k = []
             for freq in f:
+
+                logging.debug(f"solving frequency {freq}")
 
                 DSM = self.form_dsm(freq)
 
