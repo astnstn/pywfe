@@ -87,15 +87,16 @@ def polynomial(DSM):
     B[n//2:, n//2:] = -np.linalg.inv(D_LR) @ (D_LL + D_RR)
 
     vals, vecs, left_vecs = scipy.linalg.eig(B, left=True)
+    vals, vecs = np.linalg.eig(B)
 
     for i in range(vecs.shape[-1]):
 
         vecs[n//2:, i] = vecs[n//2:, i]/vals[i]
 
         vecs[n//2:, i] = (D_LL + vals[i]*D_LR) @ vecs[n//2:, i]
-        vecs[:, i] = -vecs[:, i]/np.linalg.norm(vecs[:, i])
+        vecs[:, i] = vecs[:, i]/np.linalg.norm(vecs[:, i])
 
-    return vals, vecs, left_vecs
+    return vals, vecs, vecs
 
 
 solver = {"transfer_matrix": transfer_matrix,
