@@ -7,14 +7,12 @@ WFE functionality.
 """
 
 import logging
-from collections.abc import Iterable
 import numpy as np
-from pywfe.types import Eigensolution, Boundaries
+from pywfe.types import Boundaries
 from pywfe.core import model_setup
 from pywfe.core import eigensolvers
 from pywfe.core import boundary_conditions
 from pywfe.core.classify_modes import sort_eigensolution
-from pywfe.core import dispersion_relation
 from pywfe.core.forced_problem import calculate_excited_amplitudes
 from pywfe.core.forced_problem import calculate_propagated_amplitudes
 from pywfe.core.forced_problem import calculate_modal_displacements
@@ -22,6 +20,16 @@ from pywfe.core.forced_problem import calculate_modal_displacements
 # solver dictionary which contains all the forms of the eigenproblem
 solver = eigensolvers.solver
 conditions = boundary_conditions.conditions
+
+
+def handle_iterable_xr(func):
+
+    def wrapper(self, x_r, f=None):
+        if hasattr(x_r, '__iter__') and not isinstance(x_r, str):
+            return np.array([func(self, _x_r, f) for _x_r in x_r])
+        else:
+            return func(self, x_r, f)
+    return wrapper
 
 
 class Model:
@@ -90,6 +98,7 @@ class Model:
 
         self.frequency = -1
         self.eigensolution = ()
+        self.solution = {}
         self.force = np.zeros((self.N//2))
         self.x_e = 0
         self.L = 1
@@ -100,8 +109,6 @@ class Model:
         logging.debug("debugging...")
 
     def set_boundary(self, which, condition):
-
-        null = np.zeros((self.N//2, self.N//2))
 
         if which == "right":
             self.boundaries = Boundaries(*conditions[condition](self.N//2),
@@ -122,9 +129,8 @@ class Model:
 
         Returns
         -------
-        ndarray
-            (ndof, ndof) sized array of type complex.
-
+        DSM : ndarray
+            (ndof, ndof) sized array of type complex. The condensed DSM.
         """
 
         DSM = {}
@@ -135,11 +141,31 @@ class Model:
         return DSM['EE'] - DSM['EI'] @ np.linalg.inv(DSM['II']) @ DSM['IE']
 
     def generate_eigensolution(self, f):
+        """
+        Generates the sorted eigensolution at a given frequency.
+        If frequency is None or the presently calculated frequency,
+        then reuse the previously calculated eigensolution.
 
+        Parameters
+        ----------
+        f : float
+            The frequency at which to calculate the eigensolution.
+
+        Returns
+        -------
+        eigensolution : Eigensolution (namedtuple)
+            The sorted eigensolution. The named tuple fields are:
+                - lambda_[plus]/[minus] : +/- going eigenvalues
+                - phi_[plus]/[minus] : +/- going right eigenvectors
+                - psi_[plus]/[minus] : +/- going left eigenvectors
+
+        """
+        # determine if the frequency has already been calculated
         if f is None or f == self.frequency:
 
             return self.eigensolution
 
+        # otherwise calculated the eigensolution
         else:
             self.frequency = f
 
@@ -170,16 +196,23 @@ class Model:
     def dispersion_relation(self, frequency_array, direction='plus',
                             imag_threshold=None):
 
-        k = [self.wavenumbers(f=f, direction=direction, imag_threshold=imag_threshold)
+        k = [self.wavenumbers(f=f,
+                              direction=direction,
+                              imag_threshold=imag_threshold)
              for f in frequency_array]
 
         return np.array(k)
 
     def excited_amplitudes(self, f=None):
 
-        return calculate_excited_amplitudes(self.generate_eigensolution(f),
-                                            self.force)
+        (e_plus,
+         e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
+                                                 self.force)
+        self.solution['e'] = (e_plus, e_minus)
 
+        return e_plus, e_minus
+
+    @handle_iterable_xr
     def propagated_amplitudes(self, x_r, f=None):
 
         return calculate_propagated_amplitudes(self.generate_eigensolution(f),
@@ -190,6 +223,7 @@ class Model:
                                                x_r,
                                                x_e=self.x_e)
 
+    @handle_iterable_xr
     def modal_displacements(self, x_r, f=None):
 
         return calculate_modal_displacements(self.generate_eigensolution(f),
@@ -200,6 +234,7 @@ class Model:
                                              x_r,
                                              x_e=self.x_e)
 
+    @handle_iterable_xr
     def displacements(self, x_r, f=None):
 
         q_j_plus, q_j_minus = self.modal_displacements(x_r, f=f)
@@ -207,31 +242,3 @@ class Model:
         q_j = q_j_plus + q_j_minus
 
         return np.sum(q_j, axis=-1)
-
-    # def wavenumbers(self, f, direction="both", imag_threshold=1):
-
-    #     if not isinstance(f, Iterable):
-
-    #         DSM = self.form_dsm(f)
-
-    #         k = dispersion_relation.wavenumber(f, DSM, self.delta,
-    #                                            direction=direction,
-    #                                            solver=self.solver)
-
-    #     else:
-    #         k = []
-    #         for freq in f:
-
-    #             logging.debug(f"solving frequency {freq}")
-
-    #             DSM = self.form_dsm(freq)
-
-    #             k.append(dispersion_relation.wavenumber(freq, DSM, self.delta,
-    #                                                     direction=direction,
-    #                                                     solver=self.solver))
-
-    #         k = np.array(k)
-
-    #     k[abs(k.imag) > imag_threshold] = np.nan
-
-    #     return k

@@ -219,8 +219,7 @@ def substructure_matrices(K, M, dof):
         # assign substructured matrices
         K_sub[face_type] = K[row_mask][:, col_mask]
         M_sub[face_type] = M[row_mask][:, col_mask]
-        
-        
+
     # create the partitions needed for condensing
     K_sub['EE'] = np.vstack((
         np.hstack((K_sub['LL'], K_sub['LR'])),
