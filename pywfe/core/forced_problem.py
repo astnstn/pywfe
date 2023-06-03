@@ -40,7 +40,7 @@ def generate_reflection_matrices(eigensolution, A_right, B_right, A_left, B_left
 
     try:
 
-        X = np.linalg.inv(-(A_right @
+        X = -np.linalg.inv((A_right @
                             sol.phi_minus[ndof:] + B_right @ sol.phi_minus[:ndof]))
 
         Y = A_right @ sol.phi_plus[ndof:] + B_right @ sol.phi_plus[:ndof]
@@ -52,7 +52,7 @@ def generate_reflection_matrices(eigensolution, A_right, B_right, A_left, B_left
         R_right = np.zeros_like(A_right)
 
     try:
-        X = np.linalg.inv(-(A_left @
+        X = -np.linalg.inv((A_left @
                             sol.phi_minus[ndof:] + B_left @ sol.phi_minus[:ndof]))
 
         Y = A_left @ sol.phi_plus[ndof:] + B_left @ sol.phi_plus[:ndof]
@@ -79,6 +79,8 @@ def calculate_propagated_amplitudes(eigensolution, delta, L, force, boundaries, 
 
     R_right, R_left = generate_reflection_matrices(
         eigensolution, A_right, B_right, A_left, B_left)
+
+    # print(R_right, R_left)
 
     k_plus = -np.log(sol.lambda_plus)/(1j*delta)
 

@@ -44,7 +44,7 @@ class Model:
         logging.basicConfig(format=('%(asctime)s %(levelname)-8s'
                                     '[%(filename)s:%(lineno)d] %(message)s'),
                             datefmt='%Y-%m-%d:%H:%M:%S',
-                            level=logging.DEBUG)
+                            level=logging_level)
 
         logging.info("Initalising WFE model")
 
@@ -105,11 +105,11 @@ class Model:
 
         if which == "right":
             self.boundaries = Boundaries(*conditions[condition](self.N//2),
-                                         null, null)
+                                         self.boundaries[2], self.boundaries[3])
 
         if which == "left":
             self.boundaries = Boundaries(
-                null, null, *conditions[condition](self.N//2))
+                self.boundaries[0], self.boundaries[1], *conditions[condition](self.N//2))
 
     def form_dsm(self, f):
         """
@@ -136,7 +136,7 @@ class Model:
 
     def generate_eigensolution(self, f):
 
-        if f == None or f == self.frequency:
+        if f is None or f == self.frequency:
 
             return self.eigensolution
 
@@ -147,11 +147,33 @@ class Model:
 
             unsorted_solution = solver[self.solver](DSM)
 
-            sorted_solution = sort_eigensolution(f, *unsorted_solution)
+            self.eigensolution = sort_eigensolution(f, *unsorted_solution)
 
-            self.eigensolution = sorted_solution
+            return self.eigensolution
 
-            return sorted_solution
+    def wavenumbers(self, f=None, direction="plus", imag_threshold=None):
+
+        sol = self.generate_eigensolution(f=f)
+
+        if direction == "plus":
+            k = -np.log(sol.lambda_plus)/(1j*self.delta)
+        elif direction == "minus":
+            k = -np.log(sol.lambda_minus)/(1j*self.delta)
+        elif direction == "both" or "all":
+            lambdas = np.concatenate((sol.lambda_plus, sol.lambda_minus))
+            k = -np.log(lambdas)/(1j*self.delta)
+
+        if imag_threshold:
+            k[abs(k.imag) > imag_threshold] = np.nan
+        return k
+
+    def dispersion_relation(self, frequency_array, direction='plus',
+                            imag_threshold=None):
+
+        k = [self.wavenumbers(f=f, direction=direction, imag_threshold=imag_threshold)
+             for f in frequency_array]
+
+        return np.array(k)
 
     def excited_amplitudes(self, f=None):
 
@@ -160,9 +182,7 @@ class Model:
 
     def propagated_amplitudes(self, x_r, f=None):
 
-        sol = self.generate_eigensolution(f=f)
-
-        return calculate_propagated_amplitudes(sol,
+        return calculate_propagated_amplitudes(self.generate_eigensolution(f),
                                                self.delta,
                                                self.L,
                                                self.force,
@@ -172,9 +192,7 @@ class Model:
 
     def modal_displacements(self, x_r, f=None):
 
-        sol = self.generate_eigensolution(f=f)
-
-        return calculate_modal_displacements(sol,
+        return calculate_modal_displacements(self.generate_eigensolution(f),
                                              self.delta,
                                              self.L,
                                              self.force,
@@ -190,30 +208,30 @@ class Model:
 
         return np.sum(q_j, axis=-1)
 
-    def wavenumbers(self, f, direction="both", imag_threshold=1):
+    # def wavenumbers(self, f, direction="both", imag_threshold=1):
 
-        if not isinstance(f, Iterable):
+    #     if not isinstance(f, Iterable):
 
-            DSM = self.form_dsm(f)
+    #         DSM = self.form_dsm(f)
 
-            k = dispersion_relation.wavenumber(f, DSM, self.delta,
-                                               direction=direction,
-                                               solver=self.solver)
+    #         k = dispersion_relation.wavenumber(f, DSM, self.delta,
+    #                                            direction=direction,
+    #                                            solver=self.solver)
 
-        else:
-            k = []
-            for freq in f:
+    #     else:
+    #         k = []
+    #         for freq in f:
 
-                logging.debug(f"solving frequency {freq}")
+    #             logging.debug(f"solving frequency {freq}")
 
-                DSM = self.form_dsm(freq)
+    #             DSM = self.form_dsm(freq)
 
-                k.append(dispersion_relation.wavenumber(freq, DSM, self.delta,
-                                                        direction=direction,
-                                                        solver=self.solver))
+    #             k.append(dispersion_relation.wavenumber(freq, DSM, self.delta,
+    #                                                     direction=direction,
+    #                                                     solver=self.solver))
 
-            k = np.array(k)
+    #         k = np.array(k)
 
-        k[abs(k.imag) > imag_threshold] = np.nan
+    #     k[abs(k.imag) > imag_threshold] = np.nan
 
-        return k
+    #     return k
