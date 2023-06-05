@@ -61,6 +61,7 @@ def load_comsol(folder, axis=0,
     dof_inds = np.array(info['dofs']['nameinds'])
 
     dof['fieldvar'] = dof_names[dof_inds]
+    dof['fieldvar'] = np.array([_.split(".")[-1] for _ in dof['fieldvar']])
 
     return pywfe.Model(K, M, dof,
                        null=null,
