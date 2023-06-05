@@ -16,6 +16,7 @@ from pywfe.core.classify_modes import sort_eigensolution
 from pywfe.core.forced_problem import calculate_excited_amplitudes
 from pywfe.core.forced_problem import calculate_propagated_amplitudes
 from pywfe.core.forced_problem import calculate_modal_displacements
+from pywfe.core.forced_problem import generate_reflection_matrices
 
 # solver dictionary which contains all the forms of the eigenproblem
 solver = eigensolvers.solver
@@ -23,6 +24,21 @@ conditions = boundary_conditions.conditions
 
 
 def handle_iterable_xr(func):
+    """
+    This wrapper is intended to allow the calculation of forced response
+    quantities at a range of distances. Handles single x_r or iterable x_r.
+
+    Parameters
+    ----------
+    func : func
+        Forced response function.
+
+    Returns
+    -------
+    wrapper : func
+        Wrapped forced response function.
+
+    """
 
     def wrapper(self, x_r, f=None):
         if hasattr(x_r, '__iter__') and not isinstance(x_r, str):
@@ -100,6 +116,7 @@ class Model:
         self.eigensolution = ()
         self.solution = {}
         self.force = np.zeros((self.N//2))
+        self._previous_force = None  # for recalculating e+/e-
         self.x_e = 0
         self.L = 1
 
@@ -107,6 +124,26 @@ class Model:
         self.boundaries = Boundaries(*[zero_boundary]*4)
 
         logging.debug("debugging...")
+
+    def is_same_frequency(self, f):
+        """
+        Check if this frequency has already been calculated
+
+        Parameters
+        ----------
+        f : float
+            frequency.
+
+        Returns
+        -------
+        bool
+            Whether the given frequency has already been calculated.
+
+        """
+        if f is None or f == self.frequency:
+            return True
+        else:
+            return False
 
     def set_boundary(self, which, condition):
 
@@ -161,7 +198,7 @@ class Model:
 
         """
         # determine if the frequency has already been calculated
-        if f is None or f == self.frequency:
+        if self.is_same_frequency(f):
 
             return self.eigensolution
 
@@ -178,7 +215,24 @@ class Model:
             return self.eigensolution
 
     def wavenumbers(self, f=None, direction="plus", imag_threshold=None):
+        """
+        Calculates the wavenumbers of the system at a given frequency
 
+        Parameters
+        ----------
+        f : float, optional
+            Frequency at which to calculated wavenumbers. The default is None.
+        direction : str, optional
+            Choose positive going or negative going waves. The default is "plus".
+        imag_threshold : float, optional
+            Imaginary part of wavenumber above which will be set to np.nan.
+            The default is None.
+
+        Returns
+        -------
+        k : ndarray
+            The array of wavenumbers at this frequency.
+        """
         sol = self.generate_eigensolution(f=f)
 
         if direction == "plus":
@@ -195,6 +249,25 @@ class Model:
 
     def dispersion_relation(self, frequency_array, direction='plus',
                             imag_threshold=None):
+        """
+        Calculate frequency-wavenumber relation
+
+        Parameters
+        ----------
+        frequency_array : ndarray
+            Frequencies to calculate.
+        direction : str, optional
+            Choose positive going or negative going waves. The default is "plus".
+        imag_threshold : float, optional
+            Imaginary part of wavenumber above which will be set to np.nan.
+            The default is None.
+
+        Returns
+        -------
+        wavenumbers : ndarray
+            (nfreq, n_waves) sized array of type complex.
+
+        """
 
         k = [self.wavenumbers(f=f,
                               direction=direction,
@@ -204,39 +277,158 @@ class Model:
         return np.array(k)
 
     def excited_amplitudes(self, f=None):
+        """
+        Find the excited amplitudes subject to a given force and frequency.
+        If the solution has already been calculated for the same inputs, 
+        reuse the old solution.
 
-        (e_plus,
-         e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
-                                                 self.force)
+        Parameters
+        ----------
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        e_plus : ndarray
+            Positive excited wave amplitudes.
+        e_minus : ndarray
+            Negative excited wave amplitudes.
+        """
+
+        # if the force has been unchanged from prior calculations
+        is_same_force = np.all(self.force == self._previous_force)
+
+        # if same force and frequency, then we can reuse e_plus/e_minus
+        if is_same_force and self.is_same_frequency(f):
+
+            # if it hasn't been calculated yet, do so
+            if self.solution.get('e', None) is None:
+
+                (e_plus,
+                 e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
+                                                         self.force)
+            # otherwise reuse the solution
+            else:
+                (e_plus, e_minus) = self.solution['e']
+
+        # if there is a different force or frequency involved, needs recalculating
+        else:
+
+            (e_plus,
+             e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
+                                                     self.force)
+
+        # store result for later use in computations
+        # or for analysis
         self.solution['e'] = (e_plus, e_minus)
+        self._previous_force = self.force
 
         return e_plus, e_minus
 
+    def reflection_matrices(self, f=None):
+        """
+        Generate the reflection matrices of the system for a given frequency.
+        If the solution was calculated before, reuse.
+
+        Parameters
+        ----------
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        R_right : ndarray
+            (ndof, ndof) sized array for the right reflection matrix. Complex.
+        R_left : ndarray
+            (ndof, ndof) sized array for the left reflection matrix. Complex.
+        """
+        if self.is_same_frequency(f):
+
+            if self.solution.get('R', None) is None:
+                R_right, R_left = generate_reflection_matrices(self.generate_eigensolution(f),
+                                                               *self.boundaries)
+            else:
+                R_right, R_left = self.solution['R']
+        else:
+            R_right, R_left = generate_reflection_matrices(self.generate_eigensolution(f),
+                                                           *self.boundaries)
+        self.solution['R'] = R_right, R_left
+
+        return R_right, R_left
+
     @handle_iterable_xr
     def propagated_amplitudes(self, x_r, f=None):
+        """
+        Calculate the propagated and superimposed amplitudes
+        for a given distance and frequency.
 
-        return calculate_propagated_amplitudes(self.generate_eigensolution(f),
-                                               self.delta,
-                                               self.L,
-                                               self.force,
-                                               self.boundaries,
-                                               x_r,
-                                               x_e=self.x_e)
+        Parameters
+        ----------
+        x_r : float
+            Axial response distance.
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        b_plus, b_minus : ndarray
+            Positive and negative amplitudes.
+
+        """
+
+        e_plus, e_minus = self.excited_amplitudes(f)
+        k_plus = self.wavenumbers(f)
+        (R_right,
+         R_left) = self.reflection_matrices(f)
+
+        return calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
+                                               self.L, R_right, R_left,
+                                               x_r, x_e=self.x_e)
 
     @handle_iterable_xr
     def modal_displacements(self, x_r, f=None):
+        """
+        Calculate the modal displacements at a given distance and frequency.
+        Each column corresponds to a different wavemode, each row is
+        a different degree of freedom. 
+
+        Parameters
+        ----------
+        x_r : float
+            Axial response distance.
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        q_j_plus, q_j_minus : ndarray
+            The modal displacements for positive and negative going waves.
+        """
+        b_plus, b_minus = self.propagated_amplitudes(x_r, f)
 
         return calculate_modal_displacements(self.generate_eigensolution(f),
-                                             self.delta,
-                                             self.L,
-                                             self.force,
-                                             self.boundaries,
-                                             x_r,
-                                             x_e=self.x_e)
+                                             b_plus, b_minus)
 
     @handle_iterable_xr
     def displacements(self, x_r, f=None):
+        """
+        Calculate the generalised displacements at a given force and distance.
 
+        Parameters
+        ----------
+        x_r : float
+            Axial response distance.
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        displacements : ndarray
+            The displacement for each degree of freedom at x_r
+        """
+
+        # just sum up the modal displacements over the last axis
+        # which means superimposing the modal displacements of each wave
         q_j_plus, q_j_minus = self.modal_displacements(x_r, f=f)
 
         q_j = q_j_plus + q_j_minus

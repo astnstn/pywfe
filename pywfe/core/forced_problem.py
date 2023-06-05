@@ -66,23 +66,10 @@ def generate_reflection_matrices(eigensolution, A_right, B_right, A_left, B_left
     return R_right, R_left
 
 
-def calculate_propagated_amplitudes(eigensolution, delta, L, force, boundaries, x_r, x_e=0):
+def calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
+                                    L, R_right, R_left, x_r, x_e=0):
 
-    A_right, B_right, A_left, B_left = boundaries
-
-    sol = eigensolution
-    ndof = sol.phi_plus.shape[0]//2
-
-    # Use zeros_like to create zero arrays of the same shape
-
-    e_plus, e_minus = calculate_excited_amplitudes(eigensolution, force)
-
-    R_right, R_left = generate_reflection_matrices(
-        eigensolution, A_right, B_right, A_left, B_left)
-
-    # print(R_right, R_left)
-
-    k_plus = -np.log(sol.lambda_plus)/(1j*delta)
+    ndof = len(k_plus)
 
     def tau(arg): return np.diag(np.exp(-1j*k_plus*arg))
 
@@ -101,13 +88,10 @@ def calculate_propagated_amplitudes(eigensolution, delta, L, force, boundaries, 
     return b_plus, b_minus
 
 
-def calculate_modal_displacements(eigensolution, delta, L, force, boundaries, x_r, x_e=0):
+def calculate_modal_displacements(eigensolution, b_plus, b_minus):
 
     sol = eigensolution
     ndof = sol.phi_plus.shape[0]//2
-
-    b_plus, b_minus = calculate_propagated_amplitudes(
-        eigensolution, delta, L, force, boundaries, x_r, x_e=x_e)
 
     q_j_plus = b_plus[None, :]*eigensolution.phi_plus[:ndof]
     q_j_minus = b_minus[None, :]*eigensolution.phi_minus[:ndof]
