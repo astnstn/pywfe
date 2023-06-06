@@ -73,14 +73,21 @@ def calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
 
     def tau(arg): return np.diag(np.exp(-1j*k_plus*arg))
 
-    X = np.linalg.inv(np.eye(ndof) - tau(x_e) @ R_left @ tau(L - x_e))
-    Y = e_plus + tau(x_e) @ R_left @  tau(x_e) @ e_minus
+    # X = np.linalg.inv(np.eye(ndof) - tau(x_e) @ R_left @ tau(L - x_e))
+    # Y = e_plus + tau(x_e) @ R_left @  tau(x_e) @ e_minus
 
-    a_plus = X@Y
-    a_minus = tau(L - x_e) @ R_right @ tau(L - x_e) @ a_plus
+    # a_plus = X@Y
+    # a_minus = tau(L - x_e) @ R_right @ tau(L - x_e) @ a_plus
+
+    a_plus = e_plus
 
     b_plus = tau(x_r - x_e) @ a_plus
-    b_minus = tau(L - x_r) @ R_right @ tau(L - x_r) @ b_plus
+    # b_minus = tau(L - x_r) @ R_right @ tau(L - x_r) @ b_plus
+
+    # the above is temporary, I am saving time not inverting matrices
+    # by only considering the infintie case (reflections unfinished)
+    # b_plus = e_plus
+    b_minus = np.zeros_like(e_plus)
 
     b_plus[np.isnan(b_plus)] = 0
     b_minus[np.isnan(b_minus)] = 0

@@ -126,7 +126,11 @@ def save_vtk(model, filename, x_arr, displacements):
     displacements = sort_field(model, displacements, vtk_fmt=True)
 
     # Generate the coordinates for the displacements
-    x, y, z = generate_coordinates(model, x_arr)
+    coords = generate_coordinates(model, x_arr)
+    if len(coords) == 2:
+        coords.insert(-1, np.zeros_like(coords[0]))
+        
+    x, y, z = coords
 
     # Finally, write the displacements to the VTK file
     pointsToVTK(filename, x, y, z, displacements)
