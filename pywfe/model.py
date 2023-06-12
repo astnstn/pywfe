@@ -279,7 +279,7 @@ class Model:
     def excited_amplitudes(self, f=None):
         """
         Find the excited amplitudes subject to a given force and frequency.
-        If the solution has already been calculated for the same inputs, 
+        If the solution has already been calculated for the same inputs,
         reuse the old solution.
 
         Parameters
@@ -390,7 +390,7 @@ class Model:
         """
         Calculate the modal displacements at a given distance and frequency.
         Each column corresponds to a different wavemode, each row is
-        a different degree of freedom. 
+        a different degree of freedom.
 
         Parameters
         ----------
@@ -434,3 +434,57 @@ class Model:
         q_j = q_j_plus + q_j_minus
 
         return np.sum(q_j, axis=-1)
+
+    def frequency_sweep(self, f_arr, x_r=0, quantities=['displacements']):
+
+        def function_dictionary(f_arr, x_r):
+            functions = {
+                'excited_amplitudes': {
+                    'function': self.excited_amplitudes,
+                    'args': [f],
+                },
+                'propagated_amplitudes': {
+                    'function': self.propagated_amplitudes,
+                    'args': [x_r, f],
+                },
+                'modal_displacements': {
+                    'function': self.modal_displacements,
+                    'args': [x_r, f],
+                },
+                'displacements': {
+                    'function': self.displacements,
+                    'args': [x_r, f]
+                },
+                'wavenumbers': {
+                    'function': self.wavenumbers,
+                    'args': [f]
+                },
+                'eigensolution': {
+                    'function': self.generate_eigensolution,
+                    'args': [f]
+                }
+            }
+            return functions
+
+        output = {quantity: [] for quantity in quantities}
+
+        for f in f_arr:
+
+            print(f"solving {f:.2f}")
+
+            for quantity in quantities:
+
+                functions = function_dictionary(f, x_r)
+
+                function = functions[quantity]['function']
+                args = functions[quantity]['args']
+
+                output[quantity].append(function(*args))
+
+        # print(output['eigensolution'])
+
+        for key in output.keys():
+            if key != 'eigensolution':
+                output[key] = np.array(output[key])
+
+        return output

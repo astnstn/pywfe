@@ -56,7 +56,10 @@ class Forcer:
         selected_node = self.model.node['number'][event.ind[0]]
         self.selected_nodes.append(selected_node)
 
-        print(selected_node)
+        dofs = self.model.node['dof'][event.ind[0]]
+        fieldvars = self.model.node['fieldvar'][event.ind[0]]
+        
+        print(f"node: {selected_node} | dofs: {dofs} | fieldvars {fieldvars}")
 
     def add_nodal_force(self, node, force_dict):
 
