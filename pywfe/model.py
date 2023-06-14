@@ -17,6 +17,7 @@ from pywfe.core.forced_problem import calculate_excited_amplitudes
 from pywfe.core.forced_problem import calculate_propagated_amplitudes
 from pywfe.core.forced_problem import calculate_modal_displacements
 from pywfe.core.forced_problem import generate_reflection_matrices
+from pywfe.utils.frequency_sweep import frequency_sweep
 
 # solver dictionary which contains all the forms of the eigenproblem
 solver = eigensolvers.solver
@@ -302,7 +303,8 @@ class Model:
         if is_same_force and self.is_same_frequency(f):
 
             # if it hasn't been calculated yet, do so
-            if self.solution.get('e', None) is None:
+            if (self.solution.get('e', None) is None or
+                    self.solution.get('e_freq', None) != f):
 
                 (e_plus,
                  e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
@@ -313,7 +315,6 @@ class Model:
 
         # if there is a different force or frequency involved, needs recalculating
         else:
-
             (e_plus,
              e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
                                                      self.force)
@@ -321,6 +322,7 @@ class Model:
         # store result for later use in computations
         # or for analysis
         self.solution['e'] = (e_plus, e_minus)
+        self.solution['e_freq'] = f
         self._previous_force = self.force
 
         return e_plus, e_minus
@@ -356,7 +358,7 @@ class Model:
 
         return R_right, R_left
 
-    @handle_iterable_xr
+    @ handle_iterable_xr
     def propagated_amplitudes(self, x_r, f=None):
         """
         Calculate the propagated and superimposed amplitudes
@@ -385,7 +387,7 @@ class Model:
                                                self.L, R_right, R_left,
                                                x_r, x_e=self.x_e)
 
-    @handle_iterable_xr
+    @ handle_iterable_xr
     def modal_displacements(self, x_r, f=None):
         """
         Calculate the modal displacements at a given distance and frequency.
@@ -409,7 +411,7 @@ class Model:
         return calculate_modal_displacements(self.generate_eigensolution(f),
                                              b_plus, b_minus)
 
-    @handle_iterable_xr
+    @ handle_iterable_xr
     def displacements(self, x_r, f=None):
         """
         Calculate the generalised displacements at a given force and distance.
@@ -435,56 +437,9 @@ class Model:
 
         return np.sum(q_j, axis=-1)
 
-    def frequency_sweep(self, f_arr, x_r=0, quantities=['displacements']):
+    def frequency_sweep(self, f_arr,
+                        x_r=0, quantities=['displacements'], mac=False):
 
-        def function_dictionary(f_arr, x_r):
-            functions = {
-                'excited_amplitudes': {
-                    'function': self.excited_amplitudes,
-                    'args': [f],
-                },
-                'propagated_amplitudes': {
-                    'function': self.propagated_amplitudes,
-                    'args': [x_r, f],
-                },
-                'modal_displacements': {
-                    'function': self.modal_displacements,
-                    'args': [x_r, f],
-                },
-                'displacements': {
-                    'function': self.displacements,
-                    'args': [x_r, f]
-                },
-                'wavenumbers': {
-                    'function': self.wavenumbers,
-                    'args': [f]
-                },
-                'eigensolution': {
-                    'function': self.generate_eigensolution,
-                    'args': [f]
-                }
-            }
-            return functions
+        return frequency_sweep(self, f_arr, quantities, x_r=x_r, mac=mac)
 
-        output = {quantity: [] for quantity in quantities}
-
-        for f in f_arr:
-
-            print(f"solving {f:.2f}")
-
-            for quantity in quantities:
-
-                functions = function_dictionary(f, x_r)
-
-                function = functions[quantity]['function']
-                args = functions[quantity]['args']
-
-                output[quantity].append(function(*args))
-
-        # print(output['eigensolution'])
-
-        for key in output.keys():
-            if key != 'eigensolution':
-                output[key] = np.array(output[key])
-
-        return output
+    def transfer_function(self, f_arr, x)
