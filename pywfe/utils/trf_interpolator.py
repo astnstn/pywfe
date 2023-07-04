@@ -2,7 +2,7 @@
 Transfer Function Interpolator
 ------
 
-This module contains the functionality to interpolate transfer functions 
+This module contains the functionality to interpolate transfer functions
 from pywfe.Model object.
 
 """
@@ -10,7 +10,39 @@ from pywfe.Model object.
 import numpy as np
 
 
-def interpolated_transfer_function(model, x_r, force, frequencies, dofs='all', ns=8, tolerance=5):
+def evaluate_error(q_c, q_i):
+
+    error = np.abs(q_i - q_c)/np.abs(q_c)
+    mean_error = np.mean(error[error > 0])*100
+
+    return mean_error
+
+
+def interpolate_vectors(q_c, f_c):
+
+    df = f_c[-1] - f_c[-2]
+    f_i = (f_c[1:] + f_c[:-1])/2
+
+    q_i = q_c[..., :-1] + ((f_i - f_c[:-1])/df)*(q_c[..., 1:] - q_c[..., :-1])
+
+    return q_i
+
+
+def interpolated_transfer_function(model, f_c, q_c, n):
+
+    n_passes = 0
+
+    # interpolate frequencies
+    df = f_c[-1] - f_c[-2]
+    f_i = (f_c[1:] + f_c[:-1])/2
+
+    # interpolate vectors
+    q_i = interpolate_vectors(q_c, f_c)
+
+    pass
+
+
+def _interpolated_transfer_function(model, x_r, force, frequencies, dofs='all', ns=8, tolerance=5):
 
     # frequencies to be calculated
     f_c = frequencies[::ns]

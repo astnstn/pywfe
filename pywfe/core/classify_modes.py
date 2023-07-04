@@ -17,18 +17,22 @@ def classify_wavemode(f, eigenvalue, eigenvector, threshold):
 
     logger.debug(f"eigenvalue size {abs(eigenvalue)}")
 
+    _k = -np.log(eigenvalue)/(1j)
+    _k = np.sign(_k.real)
+
     # if the eigenvalue is above 1 + threshold
     if abs(eigenvalue) > 1 + threshold:
 
-        return "left"
+        direction = "left"
 
     # if the eigenvalue is above 1 - threshold
     elif abs(eigenvalue) < 1 - threshold:
 
-        return "right"
+        direction = "right"
 
     # otherwise evaluate the power flow
     else:
+        print("propagating:")
         n = len(eigenvector)
 
         displacement = eigenvector[:n//2]
@@ -39,11 +43,22 @@ def classify_wavemode(f, eigenvalue, eigenvector, threshold):
 
         if power_flow < 0:
 
-            return "right"
+            direction = "right"
 
         elif power_flow > 0:
 
-            return "left"
+            direction = "left"
+
+    n = len(eigenvector)
+    displacement = eigenvector[:n//2]
+    force = eigenvector[n//2:]
+
+    power_flow = np.real(1j * (2*np.pi*f) *
+                         np.conj(force.T) @ displacement)
+
+    print(
+        f"size: {abs(eigenvalue)}, k sign: {_k}, eval: {direction}, Pflow: {np.sign(power_flow)}")
+    return direction
 
 
 def sort_eigensolution(f, eigenvalues, right_eigenvectors, left_eigenvectors):

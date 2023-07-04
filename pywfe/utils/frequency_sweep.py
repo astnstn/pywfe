@@ -8,9 +8,17 @@ an array of frequencies for a pywfe.Model object.
 """
 import numpy as np
 from pywfe.utils.modal_assurance import sorting_indices
+from tqdm import tqdm
 
 
-def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False):
+def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False,
+                    imag_threshold=None, dofs='all'):
+
+    if dofs == "all":
+        dofs = slice(0, model.N//2)
+
+    else:
+        dofs = np.array(dofs)
 
     output = {quantity: [] for quantity in quantities}
 
@@ -19,7 +27,7 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False):
     else:
         inds = np.arange(model.N//2)
 
-    for i in range(len(f_arr)):
+    for i in tqdm(range(len(f_arr))):
 
         if mac:
             phi_next = model.generate_eigensolution(f_arr[i]).phi_plus
@@ -31,7 +39,6 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False):
 
             if quantity == "excited_amplitudes":
 
-                # this doesn't work
                 e_plus = np.array(
                     model.excited_amplitudes(f_arr[i]))[..., 0, inds]
 
@@ -56,16 +63,40 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False):
                                               inds[tuple(index_expansion)],
                                               axis=-1)
 
+                q_j_plus = q_j_plus[..., dofs, :]
+
                 output["modal_displacements"].append(q_j_plus)
 
             if quantity == "wavenumbers":
 
-                # this works
                 k_plus = model.wavenumbers(f_arr[i])[inds]
 
                 output["wavenumbers"].append(k_plus)
 
+            if quantity == "displacements":
+
+                q = model.displacements(x_r, f_arr[i])[..., dofs]
+
+                output["displacements"].append(q)
+
+            if quantity == "forces":
+
+                D = model.form_dsm(f_arr[i])
+                D_LL = D[:model.N//2, :model.N//2]
+
+                # print(D_LL.shape, q.shape)
+
+                if q is not None:
+                    # Ensure v is a 2D array
+                    q = np.atleast_2d(q)
+
+                    # Perform matrix multiplication
+                    F = D_LL @ q.T
+                    F = F.T  # Transpose back to original shape
+
+                    output["forces"].append(F)
+
     for key in output.keys():
-        output[key] = np.array(output[key])
+        output[key] = np.squeeze(np.array(output[key]))
 
     return output

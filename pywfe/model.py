@@ -8,6 +8,7 @@ WFE functionality.
 
 import logging
 import numpy as np
+from tqdm import tqdm
 from pywfe.types import Boundaries
 from pywfe.core import model_setup
 from pywfe.core import eigensolvers
@@ -438,8 +439,24 @@ class Model:
         return np.sum(q_j, axis=-1)
 
     def frequency_sweep(self, f_arr,
-                        x_r=0, quantities=['displacements'], mac=False):
+                        x_r=0, quantities=['displacements'], mac=False, dofs='all'):
 
-        return frequency_sweep(self, f_arr, quantities, x_r=x_r, mac=mac)
+        return frequency_sweep(self, f_arr, quantities, x_r=x_r, mac=mac, dofs=dofs)
 
-    def transfer_function(self, f_arr, x)
+    def transfer_function(self, f_arr, x_r, dofs="all"):
+
+        if dofs == "all":
+            dofs = slice(0, self.N//2)
+
+        else:
+            dofs = np.array(dofs)
+
+        displacements = []
+
+        # displacements = [self.displacements(x_r, f)[dofs] for f in f_arr]
+
+        for f in tqdm(f_arr):
+
+            displacements.append(self.displacements(x_r, f)[..., dofs])
+
+        return np.squeeze(np.array(displacements))
