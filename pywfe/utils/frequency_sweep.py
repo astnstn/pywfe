@@ -91,6 +91,7 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False,
                     q = np.atleast_2d(q)
 
                     # Perform matrix multiplication
+                    # print(D_LL.shape, q.T.shape)
                     F = D_LL @ q.T
                     F = F.T  # Transpose back to original shape
 

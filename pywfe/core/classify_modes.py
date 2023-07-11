@@ -32,7 +32,6 @@ def classify_wavemode(f, eigenvalue, eigenvector, threshold):
 
     # otherwise evaluate the power flow
     else:
-        print("propagating:")
         n = len(eigenvector)
 
         displacement = eigenvector[:n//2]
@@ -41,23 +40,15 @@ def classify_wavemode(f, eigenvalue, eigenvector, threshold):
         power_flow = np.real(1j * (2*np.pi*f) *
                              np.conj(force.T) @ displacement)
 
-        if power_flow < 0:
+        if power_flow > 0:
 
             direction = "right"
 
-        elif power_flow > 0:
+        elif power_flow < 0:
 
             direction = "left"
 
-    n = len(eigenvector)
-    displacement = eigenvector[:n//2]
-    force = eigenvector[n//2:]
-
-    power_flow = np.real(1j * (2*np.pi*f) *
-                         np.conj(force.T) @ displacement)
-
-    print(
-        f"size: {abs(eigenvalue)}, k sign: {_k}, eval: {direction}, Pflow: {np.sign(power_flow)}")
+    # print(f"size: {abs(eigenvalue)}, k sign: {_k}, eval: {direction}")
     return direction
 
 

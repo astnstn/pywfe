@@ -104,3 +104,5 @@ def calculate_modal_displacements(eigensolution, b_plus, b_minus):
     q_j_minus = b_minus[None, :]*eigensolution.phi_minus[:ndof]
 
     return q_j_plus, q_j_minus
+
+def calculate_modal_forces
