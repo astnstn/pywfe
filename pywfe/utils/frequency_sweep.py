@@ -81,21 +81,24 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False,
 
             if quantity == "forces":
 
-                D = model.form_dsm(f_arr[i])
-                D_LL = D[:model.N//2, :model.N//2]
+                F = model.forces(x_r, f_arr[i])
+                output['forces'].append(F)
 
-                # print(D_LL.shape, q.shape)
+                # D = model.form_dsm(f_arr[i])
+                # D_LL = D[:model.N//2, :model.N//2]
 
-                if q is not None:
-                    # Ensure v is a 2D array
-                    q = np.atleast_2d(q)
+                # # print(D_LL.shape, q.shape)
 
-                    # Perform matrix multiplication
-                    # print(D_LL.shape, q.T.shape)
-                    F = D_LL @ q.T
-                    F = F.T  # Transpose back to original shape
+                # if q is not None:
+                #     # Ensure v is a 2D array
+                #     q = np.atleast_2d(q)
 
-                    output["forces"].append(F)
+                #     # Perform matrix multiplication
+                #     # print(D_LL.shape, q.T.shape)
+                #     F = D_LL @ q.T
+                #     F = F.T  # Transpose back to original shape
+
+                #     output["forces"].append(F)
 
     for key in output.keys():
         output[key] = np.squeeze(np.array(output[key]))

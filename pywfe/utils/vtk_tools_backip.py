@@ -8,10 +8,9 @@ in ParaView
 """
 import numpy as np
 from pyevtk.hl import pointsToVTK
-from pywfe.core import model_setup
 
 
-def generate_coordinates(dof, x):
+def generate_coordinates(model, x, node_coords=None):
     """Generate multi-dimensional coordinates for nodes in a model based on an input `x`.
 
     If `x` is iterable, each value in `x` is added to the first coordinate 
@@ -32,8 +31,8 @@ def generate_coordinates(dof, x):
     coords : list of numpy.ndarray
         List of arrays of coordinates.
     """
-    node = model_setup.create_node_dict(dof)
-    node_coords = node['coord']
+    if node_coords is None:
+        node_coords = model.node['coord']
 
     if hasattr(x, '__iter__'):
         # `x` is iterable
@@ -55,7 +54,7 @@ def generate_coordinates(dof, x):
     return coords
 
 
-def sort_field(dof, displacements, vtk_fmt=True):
+def sort_field(model, displacements, vtk_fmt=True):
     """
     This function sorts the displacements based on the field variables and prepares the displacement data
     to be written to a VTK file.
@@ -70,10 +69,8 @@ def sort_field(dof, displacements, vtk_fmt=True):
         field (dict): A dictionary where each key corresponds to a unique field variable ('fieldvar')
                       and each value is a contiguous array of displacements corresponding to that fieldvar.
     """
-    node = model_setup.create_node_dict(dof)
-
     # Getting all unique fieldvar values from the model's degrees of freedom
-    all_fieldvars = list(set(dof['fieldvar'].tolist()))
+    all_fieldvars = list(set(model.dof['fieldvar'].tolist()))
 
     # Initializing a dictionary with the fieldvar values as keys
     field = dict.fromkeys(all_fieldvars)
@@ -85,7 +82,7 @@ def sort_field(dof, displacements, vtk_fmt=True):
     # Get the length of the input displacements array
     x_len = displacements.shape[0]
     # Get the number of nodes in the model
-    disp_len = len(node['number'])
+    disp_len = len(model.node['number'])
 
     # For each fieldvar, initialize an array of zeros with size equal to the number of nodes times the length of displacements
     for var in all_fieldvars:
@@ -93,12 +90,12 @@ def sort_field(dof, displacements, vtk_fmt=True):
             np.zeros((disp_len*x_len), dtype='complex'))
 
     # Iterate over all nodes in the model
-    for i in range(len(node['number'])):
+    for i in range(len(model.node['number'])):
         # For each degree of freedom in the current node
-        for j in range(len(node['dof'][i])):
+        for j in range(len(model.node['dof'][i])):
             # Get the current fieldvar and dof
-            var = node['fieldvar'][i][j]
-            dof = node['dof'][i][j]
+            var = model.node['fieldvar'][i][j]
+            dof = model.node['dof'][i][j]
 
             # For each displacement, add it to the corresponding fieldvar array in the field dictionary
             for k in range(x_len):
@@ -113,7 +110,7 @@ def sort_field(dof, displacements, vtk_fmt=True):
     return field
 
 
-def save_vtk(dof, filename, x_arr, displacements):
+def save_vtk(model, filename, x_arr, displacements):
     """
     This function saves the model displacements to a VTK file.
 
@@ -127,10 +124,10 @@ def save_vtk(dof, filename, x_arr, displacements):
         None. Writes data to a VTK file.
     """
     # First, sort the displacements and convert to real values
-    displacements = sort_field(dof, displacements, vtk_fmt=True)
+    displacements = sort_field(model, displacements, vtk_fmt=True)
 
     # Generate the coordinates for the displacements
-    coords = generate_coordinates(dof, x_arr)
+    coords = generate_coordinates(model, x_arr)
     if len(coords) == 2:
         coords.insert(-1, np.zeros_like(coords[0]))
 
@@ -154,28 +151,3 @@ def select_fieldvar(dof, fieldvar):
         dofs[key] = dofs[key][selected_dofs]
 
     return dofs
-
-
-def select_face(dof, face):
-
-    # if dof has chosen face, keep it
-
-    dofs = dof.copy()
-
-    selected_dofs = (dofs['face'] == face)
-
-    dofs['coord'] = dofs['coord'][:, selected_dofs]
-
-    for key in ['face', 'fieldvar', 'index', 'node']:
-        dofs[key] = dofs[key][selected_dofs]
-
-    return dofs
-
-
-def dof_selection(dof, output_vector):
-
-    selected_dofs = dof['index'][:len(dof['index'])//2]
-
-    print(selected_dofs)
-
-    return output_vector[..., selected_dofs]

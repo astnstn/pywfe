@@ -17,8 +17,10 @@ from pywfe.core.classify_modes import sort_eigensolution
 from pywfe.core.forced_problem import calculate_excited_amplitudes
 from pywfe.core.forced_problem import calculate_propagated_amplitudes
 from pywfe.core.forced_problem import calculate_modal_displacements
+from pywfe.core.forced_problem import calculate_modal_forces
 from pywfe.core.forced_problem import generate_reflection_matrices
 from pywfe.utils.frequency_sweep import frequency_sweep
+from pywfe.utils.forcer import Forcer
 
 # solver dictionary which contains all the forms of the eigenproblem
 solver = eigensolvers.solver
@@ -278,6 +280,18 @@ class Model:
 
         return np.array(k)
 
+    def phase_velocity(self, frequency_array, direction='plus',
+                       imag_threshold=None):
+
+        k = [self.wavenumbers(f=f,
+                              direction=direction,
+                              imag_threshold=imag_threshold)
+             for f in frequency_array]
+
+        k = np.array(k)
+
+        return 2*np.pi*frequency_array[:, None]/k
+
     def excited_amplitudes(self, f=None):
         """
         Find the excited amplitudes subject to a given force and frequency.
@@ -438,6 +452,22 @@ class Model:
 
         return np.sum(q_j, axis=-1)
 
+    @ handle_iterable_xr
+    def modal_forces(self, x_r, f=None):
+        b_plus, b_minus = self.propagated_amplitudes(x_r, f)
+
+        return calculate_modal_forces(self.generate_eigensolution(f),
+                                      b_plus, b_minus)
+
+    @ handle_iterable_xr
+    def forces(self, x_r, f=None):
+
+        f_j_plus, f_j_minus = self.modal_forces(x_r, f=f)
+
+        f_j = f_j_plus + f_j_minus
+
+        return np.sum(f_j, axis=-1)
+
     def frequency_sweep(self, f_arr,
                         x_r=0, quantities=['displacements'], mac=False, dofs='all'):
 
@@ -460,3 +490,36 @@ class Model:
             displacements.append(self.displacements(x_r, f)[..., dofs])
 
         return np.squeeze(np.array(displacements))
+
+    def select_dofs(self, fieldvar=None):
+
+        # select the dofs on the left face (the only important ones)
+
+        dofs = self.dof.copy()
+
+        selected_dofs = (dofs['face'] == 'L')
+
+        dofs['coord'] = dofs['coord'][:, selected_dofs]
+
+        for key in ['face', 'fieldvar', 'index', 'node']:
+            dofs[key] = dofs[key][selected_dofs]
+
+        if fieldvar is not None:
+
+            selected_dofs = np.isin(dofs['fieldvar'], fieldvar)
+
+            dofs['coord'] = dofs['coord'][:, selected_dofs]
+
+            for key in ['face', 'fieldvar', 'index', 'node']:
+                dofs[key] = dofs[key][selected_dofs]
+
+        return dofs
+
+    def selection_index(self, dof):
+
+        return np.where(np.isin(self.dof['index'], dof['index']))[0]
+
+    def see(self):
+
+        self.forcer = Forcer(self)
+        self.forcer.select_nodes()
