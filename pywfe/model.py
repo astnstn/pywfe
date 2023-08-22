@@ -119,7 +119,7 @@ class Model:
         self.frequency = -1
         self.eigensolution = ()
         self.solution = {}
-        self.force = np.zeros((self.N//2))
+        self.force = np.zeros((self.N//2), dtype = 'complex')
         self._previous_force = None  # for recalculating e+/e-
         self.x_e = 0
         self.L = 1
@@ -523,3 +523,36 @@ class Model:
 
         self.forcer = Forcer(self)
         self.forcer.select_nodes()
+
+    def couple(self, coupler, coupling_dof):
+
+        return CoupledModel(self, coupler, coupling_dof)
+
+
+class CoupledModel(Model):
+
+    def __init__(self, original_model, coupler, coupling_dof):
+        # Copy attributes from the original model
+        self.__dict__ = original_model.__dict__.copy()
+
+        # Add or modify any attributes specific to the coupled model
+        self.coupler = coupler
+        self.coupling_dof = coupling_dof
+
+    def excited_amplitudes(self, f=None):
+
+        # put in unit force to get the transfer displacement q0
+        self.force[self.coupling_dof] = 1
+
+        e_plus, e_minus = super().excited_amplitudes(f=f)
+        q_j_plus, q_j_minus = calculate_modal_displacements(self.generate_eigensolution(f),
+                                                            e_plus, e_minus)
+        q_j = q_j_plus + q_j_minus
+        q0 = np.sum(q_j, axis=-1)[self.coupling_dof]
+
+        # get force from coupler
+        # input force into specified coupling_dof
+        output_force = self.coupler.force(f, q0)
+        self.force[self.coupling_dof] = output_force
+        print(self.force[self.coupling_dof])
+        return super().excited_amplitudes(f=f)
