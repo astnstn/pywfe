@@ -1,5 +1,0 @@
-Model Setup
-===========
-
-.. automodule:: pywfe.core.model_setup
-   :members:

@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>model &#8212; pywfe  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="core" href="core.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="model">
+<h1>model<a class="headerlink" href="#model" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pywfe.model.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywfe.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'transfer_matrix'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.model.Model.dispersion_relation" title="pywfe.model.Model.dispersion_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispersion_relation</span></code></a>(frequency_array[, ...])</p></td>
+<td><p>Calculate frequency-wavenumber relation</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.model.Model.excited_amplitudes" title="pywfe.model.Model.excited_amplitudes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">excited_amplitudes</span></code></a>([f])</p></td>
+<td><p>Find the excited amplitudes subject to a given force and frequency.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.model.Model.form_dsm" title="pywfe.model.Model.form_dsm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">form_dsm</span></code></a>(f)</p></td>
+<td><p>Forms the DSM of the model at a given frequency</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.model.Model.generate_eigensolution" title="pywfe.model.Model.generate_eigensolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_eigensolution</span></code></a>(f)</p></td>
+<td><p>Generates the sorted eigensolution at a given frequency.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.model.Model.is_same_frequency" title="pywfe.model.Model.is_same_frequency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_same_frequency</span></code></a>(f)</p></td>
+<td><p>Check if this frequency has already been calculated</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.model.Model.phase_velocity" title="pywfe.model.Model.phase_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phase_velocity</span></code></a>(frequency_array[, direction, ...])</p></td>
+<td><p>gets the phase velocity curves for a given frequency array</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.model.Model.reflection_matrices" title="pywfe.model.Model.reflection_matrices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reflection_matrices</span></code></a>([f])</p></td>
+<td><p>Generate the reflection matrices of the system for a given frequency.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.model.Model.set_boundary" title="pywfe.model.Model.set_boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_boundary</span></code></a>(which, condition)</p></td>
+<td><p>Sets the boundary conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.model.Model.wavenumbers" title="pywfe.model.Model.wavenumbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavenumbers</span></code></a>([f, direction, imag_threshold])</p></td>
+<td><p>Calculates the wavenumbers of the system at a given frequency</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>displacements</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>forces</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>frequency_sweep</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>modal_displacements</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>modal_forces</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>propagated_amplitudes</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>see</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>select_dofs</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>selection_index</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>transfer_function</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.dispersion_relation">
+<span class="sig-name descname"><span class="pre">dispersion_relation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imag_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.dispersion_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate frequency-wavenumber relation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>frequency_array</strong><span class="classifier">ndarray</span></dt><dd><p>Frequencies to calculate.</p>
+</dd>
+<dt><strong>direction</strong><span class="classifier">str, optional</span></dt><dd><p>Choose positive going or negative going waves. The default is “plus”.</p>
+</dd>
+<dt><strong>imag_threshold</strong><span class="classifier">float, optional</span></dt><dd><p>Imaginary part of wavenumber above which will be set to np.nan.
+The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>wavenumbers</strong><span class="classifier">ndarray</span></dt><dd><p>(nfreq, n_waves) sized array of type complex.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.excited_amplitudes">
+<span class="sig-name descname"><span class="pre">excited_amplitudes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.excited_amplitudes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the excited amplitudes subject to a given force and frequency.
+If the solution has already been calculated for the same inputs,
+reuse the old solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float, optional</span></dt><dd><p>Frequency. The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>e_plus</strong><span class="classifier">ndarray</span></dt><dd><p>Positive excited wave amplitudes.</p>
+</dd>
+<dt><strong>e_minus</strong><span class="classifier">ndarray</span></dt><dd><p>Negative excited wave amplitudes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.form_dsm">
+<span class="sig-name descname"><span class="pre">form_dsm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.form_dsm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forms the DSM of the model at a given frequency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float</span></dt><dd><p>frequency at which to form the DSM.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>DSM</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type complex. The condensed DSM.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.generate_eigensolution">
+<span class="sig-name descname"><span class="pre">generate_eigensolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.generate_eigensolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the sorted eigensolution at a given frequency.
+If frequency is None or the presently calculated frequency,
+then reuse the previously calculated eigensolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float</span></dt><dd><p>The frequency at which to calculate the eigensolution.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>eigensolution</strong><span class="classifier">Eigensolution (namedtuple)</span></dt><dd><dl class="simple">
+<dt>The sorted eigensolution. The named tuple fields are:</dt><dd><ul class="simple">
+<li><p>lambda_[plus]/[minus] : +/- going eigenvalues</p></li>
+<li><p>phi_[plus]/[minus] : +/- going right eigenvectors</p></li>
+<li><p>psi_[plus]/[minus] : +/- going left eigenvectors</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.is_same_frequency">
+<span class="sig-name descname"><span class="pre">is_same_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.is_same_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this frequency has already been calculated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float</span></dt><dd><p>frequency.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Whether the given frequency has already been calculated.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.phase_velocity">
+<span class="sig-name descname"><span class="pre">phase_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imag_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.phase_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the phase velocity curves for a given frequency array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>frequency_array</strong><span class="classifier">np.ndarray</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+<dt><strong>direction</strong><span class="classifier">str, optional</span></dt><dd><p>Direction of the waves. The default is ‘plus’.</p>
+</dd>
+<dt><strong>imag_threshold</strong><span class="classifier">float, optional</span></dt><dd><p>Imaginary threshold above which set to np.nan. The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>ndarray</dt><dd><p>phase velocity.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.reflection_matrices">
+<span class="sig-name descname"><span class="pre">reflection_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.reflection_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the reflection matrices of the system for a given frequency.
+If the solution was calculated before, reuse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float, optional</span></dt><dd><p>Frequency. The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>R_right</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array for the right reflection matrix. Complex.</p>
+</dd>
+<dt><strong>R_left</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array for the left reflection matrix. Complex.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.set_boundary">
+<span class="sig-name descname"><span class="pre">set_boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.set_boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the boundary conditions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>which</strong><span class="classifier">string</span></dt><dd><p>left or right.</p>
+</dd>
+<dt><strong>condition</strong><span class="classifier">string</span></dt><dd><p>fixed or free.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.model.Model.wavenumbers">
+<span class="sig-name descname"><span class="pre">wavenumbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imag_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.model.Model.wavenumbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the wavenumbers of the system at a given frequency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float, optional</span></dt><dd><p>Frequency at which to calculated wavenumbers. The default is None.</p>
+</dd>
+<dt><strong>direction</strong><span class="classifier">str, optional</span></dt><dd><p>Choose positive going or negative going waves. The default is “plus”.</p>
+</dd>
+<dt><strong>imag_threshold</strong><span class="classifier">float, optional</span></dt><dd><p>Imaginary part of wavenumber above which will be set to np.nan.
+The default is None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>k</strong><span class="classifier">ndarray</span></dt><dd><p>The array of wavenumbers at this frequency.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pywfe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">core</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">model</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="core.html" title="previous chapter">core</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Austen Stone.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/model.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

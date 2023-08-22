@@ -11,6 +11,7 @@ Welcome to pywfe's documentation!
    :caption: Contents:
 
    core
+   model
 
 
 Indices and tables

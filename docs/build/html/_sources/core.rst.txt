@@ -7,3 +7,6 @@ core
 .. automodule:: pywfe.core.eigensolvers
    :members:
 
+.. automodule:: pywfe.core.forced_problem
+   :members:
+

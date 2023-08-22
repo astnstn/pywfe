@@ -151,6 +151,21 @@ class Model:
             return False
 
     def set_boundary(self, which, condition):
+        """
+        Sets the boundary conditions
+
+        Parameters
+        ----------
+        which : string
+            left or right.
+        condition : string
+            fixed or free.
+
+        Returns
+        -------
+        None.
+
+        """
 
         if which == "right":
             self.boundaries = Boundaries(*conditions[condition](self.N//2),
@@ -283,6 +298,24 @@ class Model:
 
     def phase_velocity(self, frequency_array, direction='plus',
                        imag_threshold=None):
+        """
+        gets the phase velocity curves for a given frequency array
+
+        Parameters
+        ----------
+        frequency_array : np.ndarray
+            DESCRIPTION.
+        direction : str, optional
+            Direction of the waves. The default is 'plus'.
+        imag_threshold : float, optional
+            Imaginary threshold above which set to np.nan. The default is None.
+
+        Returns
+        -------
+        ndarray
+            phase velocity.
+
+        """
 
         k = [self.wavenumbers(f=f,
                               direction=direction,
@@ -439,21 +472,21 @@ class Model:
     @ handle_iterable_xr
     def displacements(self, x_r, f=None):
         """
-        Calculate the generalised displacements at a given force and distance.
+        gets the displacements for all degrees of freedom at specified x and f.
 
         Parameters
         ----------
         x_r : float
-            Axial response distance.
+            response distance (can be array like).
         f : float, optional
             Frequency. The default is None.
 
         Returns
         -------
-        displacements : ndarray
-            The displacement for each degree of freedom at x_r
-        """
+        ndarray
+            displacements for each degree of freedom.
 
+        """
         # just sum up the modal displacements over the last axis
         # which means superimposing the modal displacements of each wave
         q_j_plus, q_j_minus = self.modal_displacements(x_r, f=f)
@@ -464,6 +497,22 @@ class Model:
 
     @ handle_iterable_xr
     def modal_forces(self, x_r, f=None):
+        """
+        Generates the modal forces at given distance and frequency
+
+        Parameters
+        ----------
+        x_r : float
+            Response distance.
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        np.ndarray
+            modal force array.
+
+        """
         b_plus, b_minus = self.propagated_amplitudes(x_r, f)
 
         return calculate_modal_forces(self.generate_eigensolution(f),
@@ -531,111 +580,8 @@ class Model:
 
     def see(self):
 
+        # this essentially generates an interactive matplotlib of the mesh
+        # used for seeing what dofs are where so you can add specific forcing
+
         self.forcer = Forcer(self)
         self.forcer.select_nodes()
-
-    def couple(self, coupler, coupling_dof):
-
-        return CoupledModel(self, coupler, coupling_dof)
-
-
-# class CoupledModel(Model):
-
-#     def __init__(self, original_model, coupler, coupling_dof):
-#         # Copy attributes from the original model
-#         self.__dict__ = copy.deepcopy(original_model.__dict__)
-
-#         # Add or modify any attributes specific to the coupled model
-#         self.coupler = coupler
-#         self.coupling_dof = coupling_dof
-
-#     def excited_amplitudes(self, f=None):
-
-#         # print("entering modified excited_amplitudes")
-#         # print(f"initial inherit force: {self.force[82]}")
-
-#         # put in unit force to get the transfer displacement q0
-#         self.force[self.coupling_dof] = 1
-#         # print("set self force to unity")
-#         # print(f"inherit force: {self.force[82]}")
-
-#         e_plus, e_minus = super().excited_amplitudes(f=f)
-#         q_j_plus, q_j_minus = calculate_modal_displacements(self.generate_eigensolution(f),
-#                                                             e_plus, e_minus)
-#         q_j = q_j_plus + q_j_minus
-#         q0 = np.sum(q_j, axis=-1)[self.coupling_dof]
-
-#         # get force from coupler
-#         # input force into specified coupling_dof
-#         output_force = self.coupler.force(f, q0)
-#         # print(f"output_force aquired: {output_force}")
-
-#         self.force[self.coupling_dof] = output_force
-#         # print(f"inherit force before modifying previous: {self.force[82]}")
-#         # self._previous_force[self.coupling_dof] = 1
-
-#         # print(f"inherit force after: {self.force[82]}")
-
-#         # print(self.force[self.coupling_dof])
-#         return super().excited_amplitudes(f=f)
-
-class CoupledModel(Model):
-
-    def __init__(self, original_model, coupler, coupling_dof):
-        # Copy attributes from the original model
-        self.__dict__ = copy.deepcopy(original_model.__dict__)
-
-        # Add or modify any attributes specific to the coupled model
-        self.coupler = coupler
-        self.coupling_dof = coupling_dof
-
-    # def excited_amplitudes(self, f=None):
-
-    #     # put in unit force to get the transfer displacement q0
-    #     self.force[self.coupling_dof] = 1
-
-    #     e_plus, e_minus = super().excited_amplitudes(f=f)
-    #     q_j_plus, q_j_minus = calculate_modal_displacements(self.generate_eigensolution(f),
-    #                                                         e_plus, e_minus)
-    #     q_j = q_j_plus + q_j_minus
-    #     q0 = np.sum(q_j, axis=-1)[self.coupling_dof]
-
-    #     # get force from coupler
-    #     # input force into specified coupling_dof
-    #     output_force = self.coupler.force(f, q0)
-
-    #     self.force[self.coupling_dof] = output_force
-
-    #     return super().excited_amplitudes(f=f)
-
-    def excited_amplitudes(self, f=None):
-
-        # put in unit force to get the transfer displacement q0
-        self.force[self.coupling_dof] = 1
-
-        (e_plus,
-         e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
-                                                 self.force)
-
-        k_plus = self.wavenumbers(f)
-        (R_right,
-         R_left) = self.reflection_matrices(f)
-
-        b_plus, b_minus = calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
-                                                          self.L, R_right, R_left,
-                                                          0, x_e=self.x_e)
-
-        q_j_plus, q_j_minus = calculate_modal_displacements(self.generate_eigensolution(f),
-                                                            b_plus, b_minus)
-
-        q_j = q_j_plus + q_j_minus
-        q0 = np.sum(q_j, axis=-1)[self.coupling_dof]
-
-        output_force = self.coupler.force(f, q0)
-        self.force[self.coupling_dof] = output_force
-
-        (e_plus,
-         e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
-                                                 self.force)
-
-        return e_plus, e_minus
