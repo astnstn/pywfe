@@ -1,6 +1,6 @@
 """
-Modal Assurance
-------
+modal_assurance
+---------------
 
 This module contains functions for sorting frequency sweept data by mode index
 

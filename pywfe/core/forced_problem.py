@@ -1,5 +1,5 @@
 """
-Forced Problem
+forced_problem
 --------------
 
 This module contains the functionality needed to apply forces to a WFE model.
@@ -10,6 +10,25 @@ from pywfe.types import Eigensolution, Boundaries
 
 
 def calculate_excited_amplitudes(eigensolution, force):
+    """
+    Calculates the directly excited amplitudes subject to a given force
+    and modal solution.
+
+    Parameters
+    ----------
+    eigensolution : namedtuple
+        eigensolution.
+    force : np.ndarray
+        force vector.
+
+    Returns
+    -------
+    e_plus : np.ndarray
+        directly excited modal amplitudes (positive).
+    e_minus : np.ndarray
+        directly excited modal amplitudes (negative).
+
+    """
 
     n = eigensolution.phi_plus.shape[-1]
 
@@ -28,6 +47,30 @@ def calculate_excited_amplitudes(eigensolution, force):
 
 
 def generate_reflection_matrices(eigensolution, A_right, B_right, A_left, B_left):
+    """
+    Calculates the reflection matrices from boundary matrices.
+
+    Parameters
+    ----------
+    eigensolution : TYPE
+        DESCRIPTION.
+    A_right : np.ndarray
+        A matrix on the right boundary.
+    B_right : np.ndarray
+        B matrix on the right boundary.
+    A_left : np.ndarray
+        A natrix on the left boundary.
+    B_left : np.ndarray
+        B matrix on the left boundary.
+
+    Returns
+    -------
+    R_right : np.ndarray
+        Right reflection matrix.
+    R_left : np.ndarray
+        Left reflection matrix.
+
+    """
 
     sol = eigensolution
     ndof = sol.phi_plus.shape[0]//2
@@ -68,6 +111,36 @@ def generate_reflection_matrices(eigensolution, A_right, B_right, A_left, B_left
 
 def calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
                                     L, R_right, R_left, x_r, x_e=0):
+    """
+    Calculates the ampltiudes of waves after propagation to response point
+
+    Parameters
+    ----------
+    e_plus : np.ndarray
+        positive directly excited amplitudes.
+    e_minus : np.ndarray
+        negative directly excited amplitudes.
+    k_plus : np.ndarray
+        wavenumber array.
+    L : float
+        DESCRIPTION.
+    R_right : np.ndarray
+        Right reflection matrix.
+    R_left : np.ndarray
+        Left reflection matrix.
+    x_r : float, np.ndarray
+        Response distance.
+    x_e : float, Excitation distance
+        DESCRIPTION. The default is 0.
+
+    Returns
+    -------
+    b_plus : np.ndarray
+        positive propagated amplitudes.
+    b_minus : np.ndarray
+        negative propagated amplitudes.
+
+    """
 
     ndof = len(k_plus)
 
@@ -96,6 +169,27 @@ def calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
 
 
 def calculate_modal_displacements(eigensolution, b_plus, b_minus):
+    """
+    Calculates the displacement of each mode (last axis is modal)
+
+    Parameters
+    ----------
+    eigensolution : namedtuple
+        eigensolution.
+    b_plus : np.ndarray
+        positive propagated amplitudes.
+    b_minus : np.ndarray
+        negative propagated amplitudes.
+
+
+    Returns
+    -------
+    q_j_plus : np.ndarray
+        positive going modal displacements.
+    q_j_minus : np.ndarray
+        negative going modal displacements.
+
+    """
 
     sol = eigensolution
     ndof = sol.phi_plus.shape[0]//2
@@ -107,6 +201,26 @@ def calculate_modal_displacements(eigensolution, b_plus, b_minus):
 
 
 def calculate_modal_forces(eigensolution, b_plus, b_minus):
+    """
+    Calculates the internal forces of each mode (last axis is modal)
+
+    Parameters
+    ----------
+    eigensolution : namedtuple
+        eigensolution.
+    b_plus : np.ndarray
+        positive propagated amplitudes.
+    b_minus : np.ndarray
+        negative propagated amplitudes.
+
+    Returns
+    -------
+    f_j_plus : np.ndarray
+        Positive going modal forces.
+    f_j_minus : np.ndarray
+        Negative going modal forces.
+
+    """
 
     ndof = eigensolution.phi_plus.shape[0]//2
 

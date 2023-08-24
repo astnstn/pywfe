@@ -46,6 +46,7 @@ exclude_patterns = []
 html_theme = 'alabaster'
 
 autosummary_generate = True
+autodoc_member_order = 'bysource'
 numpydoc_class_members_toctree = False
 
 # Add any paths that contain custom static files (such as style sheets) here,

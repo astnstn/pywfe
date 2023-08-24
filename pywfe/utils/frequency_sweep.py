@@ -1,6 +1,6 @@
 """
-Frequency Sweep
-------
+frequency_sweep
+---------------
 
 This module contains the  fucntion for calculating various quantities over
 an array of frequencies for a pywfe.Model object.

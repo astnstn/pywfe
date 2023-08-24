@@ -8,6 +8,7 @@ WFE functionality.
 
 import logging
 import numpy as np
+from functools import wraps
 from tqdm import tqdm
 from pywfe.types import Boundaries
 from pywfe.core import model_setup
@@ -44,7 +45,7 @@ def handle_iterable_xr(func):
         Wrapped forced response function.
 
     """
-
+    @wraps(func)
     def wrapper(self, x_r, f=None):
         if hasattr(x_r, '__iter__') and not isinstance(x_r, str):
             return np.array([func(self, _x_r, f) for _x_r in x_r])
@@ -54,16 +55,58 @@ def handle_iterable_xr(func):
 
 
 class Model:
+    """
+    The main high level api in the pywfe package.
+    """
 
     def __init__(self, K, M, dof,
                  null=None, nullf=None,
                  axis=0,
                  logging_level=20, solver="transfer_matrix"):
+        """
+        initialise a Model object
+
+        Parameters
+        ----------
+        K : np.ndarray
+            Stiffness matrix :math:`\mathbf{K}` shape :math:`(N, N)`.
+        M : np.ndarray
+            Mass matrix :math:`\mathbf{M}` shape :math:`(N, N)`.
+        dof : dict
+            A dictionary containing the following keys:
+
+            - ``'coord'`` : array of shape :math:`(n_{\\text{{dim}}}, N)`
+                Coordinates of the degrees of freedom, where :math:`n_{\\text{{dim}}}` is the number of spatial dimensions and :math:`N` is the total number of degrees of freedom in the initial total mesh.
+            - ``'node'`` : array of shape :math:`(N,)`
+                Node number that the degree of freedom sits on.
+            - ``'fieldvar'`` : array of shape :math:`(N,)`
+                Field variable for the degree of freedom (e.g., pressure, displacement in x, displacement in y).
+            - ``'index'`` : array of shape :math:`(N,)`
+                Index of the degree of freedom, used to keep track of the degrees of freedom when sorted.
+
+        null : ndarray, optional
+            Null space constraint matrix (for boundary conditions) shape :math:`(N, N)`. The default is None.
+        nullf : ndarray, optional
+            Force null space constraint matrix (for boundary conditions) shape :math:`(N, N)`. The default is None.
+        axis : int, optional
+            The waveguide axis. Moves ``dof['coord'][axis]`` to ``dof['coord'][0]``. The default is 0.
+        logging_level : int, optional
+            logging level. The default is 20.
+        solver : str, optional
+            The form of the eigenvalue to use. The default is "transfer_matrix".
+            Options are currently ``'transfer_matrix'`` or ``'polynomial'``.
+
+        Returns
+        -------
+        None.
+
+        """
 
         K, M = K.astype('complex'), M.astype('complex')
 
         # chooses what form of the eigenproblem to solve
         self.solver = solver
+        """Description of solver."""
 
         # Set up logging
 
@@ -95,19 +138,32 @@ class Model:
         # order the dofs into left and right faces
         K, M, dof = model_setup.order_system_faces(K, M, dof)
 
-        self.K, self.M, self.dof = K, M, dof
+        self.K = K
+        """Sorted stiffness matrix"""
+        self.M = M
+        """Sorted mass matrix"""
+        self.dof = dof
+        """Sorted dof dictionary"""
 
         # substructure the matrices into LL, LR etc
-        self.K_sub, self.M_sub = model_setup.substructure_matrices(K, M, dof)
+        K_sub, M_sub = model_setup.substructure_matrices(K, M, dof)
+
+        self.K_sub = K_sub
+        """dictionary containing substructured stiffness matrices ``'LL', 'LR, 'RL', 'RR', 'LI', 'IL', 'RI', 'IR', 'II'``"""
+        self.M_sub = M_sub
+        """dictionary containing substructured mass matrices."""
 
         # node dictionary
         self.node = model_setup.create_node_dict(dof)
+        """dictionary of node information"""
 
         # length of the waveguide
         self.delta = np.max(self.dof['coord'][0])
+        """Waveguide segment length"""
 
         # number of left/right dofs
         self.N = int(np.sum(self.dof['face'] == 'L')*2)
+        """Number of dofs on both left and right faces combined"""
 
         # do some logging for debug purposes
         init_debug = ["Model initialised",
@@ -119,8 +175,10 @@ class Model:
 
         self.frequency = -1
         self.eigensolution = ()
+        """The eigensolution at a given frequency. Gives values and vectors corresponding to propagation constants and mode shapes"""
         self.solution = {}
         self.force = np.zeros((self.N//2), dtype='complex')
+        """The force vector corresponding to forces at each dof"""
         self._previous_force = None  # for recalculating e+/e-
         self.x_e = 0
         self.L = 1
@@ -520,6 +578,22 @@ class Model:
 
     @ handle_iterable_xr
     def forces(self, x_r, f=None):
+        """
+        Gets the total force on each degree of freedom.
+
+        Parameters
+        ----------
+        x_r : float
+            Response distance.
+        f : float, optional
+            Frequency. The default is None.
+
+        Returns
+        -------
+        np.ndarray
+            forces.
+
+        """
 
         f_j_plus, f_j_minus = self.modal_forces(x_r, f=f)
 
@@ -529,11 +603,50 @@ class Model:
 
     def frequency_sweep(self, f_arr,
                         x_r=0, quantities=['displacements'], mac=False, dofs='all'):
+        """
+        Solves various quantities over specified frequency and response range.
+        Includes Modal Assurance Critereon (MAC) sorting.
 
+        Parameters
+        ----------
+        f_arr : np.ndarray
+            Array of frequencies.
+        x_r : float or np.ndarray, optional
+            Response distance. The default is 0.
+        quantities : list, optional
+            Quantities to solve for. The default is ['displacements'].
+        mac : bool, optional
+            Whether to sort modal quantities according to MAC. The default is False.
+        dofs : list, optional
+            Select specific degrees of freedom. The default is 'all'.
+
+        Returns
+        -------
+        dict
+            Dictionary of output for specified quantities.
+
+        """
         return frequency_sweep(self, f_arr, quantities, x_r=x_r, mac=mac, dofs=dofs)
 
     def transfer_function(self, f_arr, x_r, dofs="all"):
+        """
+        Gets the displacement over frequency at specified distance and dofs.
 
+        Parameters
+        ----------
+        f_arr : np.ndarray
+            Frequency array.
+        x_r : float or np.ndarray
+            Response distance.
+        dofs : list, optional
+            List of dofs to return. The default is "all".
+
+        Returns
+        -------
+        ndarray
+            Displacements over frequency and distance.
+
+        """
         if dofs == "all":
             dofs = slice(0, self.N//2)
 
@@ -551,6 +664,21 @@ class Model:
         return np.squeeze(np.array(displacements))
 
     def select_dofs(self, fieldvar=None):
+        """
+        select the model degrees of freedom that correspond to specified 
+        field variable.
+
+        Parameters
+        ----------
+        fieldvar : str or list, optional
+            The fieldvariable or list thereof to select for. The default is None.
+
+        Returns
+        -------
+        dofs : dict
+            Reduced dof dictionary.
+
+        """
 
         # select the dofs on the left face (the only important ones)
 
@@ -575,10 +703,32 @@ class Model:
         return dofs
 
     def selection_index(self, dof):
+        """
+        Get the dof indices for a given selection.
+
+        Parameters
+        ----------
+        dof : dict
+            dof dictionary.
+
+        Returns
+        -------
+        np.ndarray
+            1D array of indices for selected dofs.
+        """
 
         return np.where(np.isin(self.dof['index'], dof['index']))[0]
 
     def see(self):
+        """
+        Creates interactive matplotlib widget to visualise mesh and 
+        inspect degrees of freedom.
+
+        Returns
+        -------
+        None.
+
+        """
 
         # this essentially generates an interactive matplotlib of the mesh
         # used for seeing what dofs are where so you can add specific forcing

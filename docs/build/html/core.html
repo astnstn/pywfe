@@ -17,8 +17,8 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="model" href="model.html" />
-    <link rel="prev" title="Welcome to pywfe’s documentation!" href="index.html" />
+    <link rel="next" title="utils" href="utils.html" />
+    <link rel="prev" title="model" href="model.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -35,10 +35,18 @@
 
           <div class="body" role="main">
             
-  <section id="module-pywfe.core.model_setup">
-<span id="core"></span><h1>core<a class="headerlink" href="#module-pywfe.core.model_setup" title="Permalink to this heading">¶</a></h1>
-<section id="model-setup">
-<h2>model_setup<a class="headerlink" href="#model-setup" title="Permalink to this heading">¶</a></h2>
+  <section id="core">
+<h1>core<a class="headerlink" href="#core" title="Permalink to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#model-setup" id="id1">model_setup</a></p></li>
+<li><p><a class="reference internal" href="#eigensolvers" id="id2">eigensolvers</a></p></li>
+<li><p><a class="reference internal" href="#classify-modes" id="id3">classify_modes</a></p></li>
+<li><p><a class="reference internal" href="#forced-problem" id="id4">forced_problem</a></p></li>
+</ul>
+</nav>
+<span class="target" id="module-pywfe.core.model_setup"></span><section id="model-setup">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">model_setup</a><a class="headerlink" href="#model-setup" title="Permalink to this heading">¶</a></h2>
 <p>This module contains the functions for setting up the WFE model.</p>
 <dl class="simple">
 <dt>This includes:</dt><dd><ul class="simple">
@@ -49,6 +57,29 @@
 </ul>
 </dd>
 </dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.generate_dof_info">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">generate_dof_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.generate_dof_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the <cite>dof</cite> dictionary, including which face each dof is on.
+Also rolls sets the waveguide axis and created index array if none given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">TYPE, optional</span></dt><dd><p>DESCRIPTION. The default is 0.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dof</strong><span class="classifier">TYPE</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="pywfe.core.model_setup.apply_boundary_conditions">
 <span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">apply_boundary_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.apply_boundary_conditions" title="Permalink to this definition">¶</a></dt>
@@ -76,49 +107,6 @@ Resorts and removes degrees of freedom as needed. (NOT FINISHED)</p>
 <dt><strong>M</strong><span class="classifier">ndarray</span></dt><dd><p>(ndof, ndof) sized array of type float or complex.</p>
 </dd>
 <dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pywfe.core.model_setup.create_node_dict">
-<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">create_node_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.create_node_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates node dictionary for nodes on the left face of the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>node</strong><span class="classifier">dict</span></dt><dd><p>node dictionary.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pywfe.core.model_setup.generate_dof_info">
-<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">generate_dof_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.generate_dof_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates the <cite>dof</cite> dictionary, including which face each dof is on.
-Also rolls sets the waveguide axis and created index array if none given.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>DESCRIPTION.</p>
-</dd>
-<dt><strong>axis</strong><span class="classifier">TYPE, optional</span></dt><dd><p>DESCRIPTION. The default is 0.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>dof</strong><span class="classifier">TYPE</span></dt><dd><p>DESCRIPTION.</p>
 </dd>
 </dl>
 </dd>
@@ -178,9 +166,29 @@ Also rolls sets the waveguide axis and created index array if none given.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.model_setup.create_node_dict">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.model_setup.</span></span><span class="sig-name descname"><span class="pre">create_node_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dof</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.model_setup.create_node_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates node dictionary for nodes on the left face of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dof</strong><span class="classifier">dict</span></dt><dd><p>dof dictionary.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>node</strong><span class="classifier">dict</span></dt><dd><p>node dictionary.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <span class="target" id="module-pywfe.core.eigensolvers"></span><section id="eigensolvers">
-<h2>Eigensolvers<a class="headerlink" href="#eigensolvers" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">eigensolvers</a><a class="headerlink" href="#eigensolvers" title="Permalink to this heading">¶</a></h2>
 <p>This module contains different solvers for the WFE eigenproblem.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pywfe.core.eigensolvers.transfer_matrix">
@@ -220,9 +228,157 @@ Column i is vector corresponding to vals[i]</p>
 </dd></dl>
 
 </section>
+<span class="target" id="module-pywfe.core.classify_modes"></span><section id="classify-modes">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">classify_modes</a><a class="headerlink" href="#classify-modes" title="Permalink to this heading">¶</a></h2>
+<p>This module contains the functionality needed to sort eigensolutions of the
+WFE method into positive and negative going waves.</p>
+</section>
 <span class="target" id="module-pywfe.core.forced_problem"></span><section id="forced-problem">
-<h2>Forced Problem<a class="headerlink" href="#forced-problem" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">forced_problem</a><a class="headerlink" href="#forced-problem" title="Permalink to this heading">¶</a></h2>
 <p>This module contains the functionality needed to apply forces to a WFE model.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.forced_problem.calculate_excited_amplitudes">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.forced_problem.</span></span><span class="sig-name descname"><span class="pre">calculate_excited_amplitudes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigensolution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.forced_problem.calculate_excited_amplitudes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the directly excited amplitudes subject to a given force
+and modal solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>eigensolution</strong><span class="classifier">namedtuple</span></dt><dd><p>eigensolution.</p>
+</dd>
+<dt><strong>force</strong><span class="classifier">np.ndarray</span></dt><dd><p>force vector.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>e_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>directly excited modal amplitudes (positive).</p>
+</dd>
+<dt><strong>e_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>directly excited modal amplitudes (negative).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.forced_problem.generate_reflection_matrices">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.forced_problem.</span></span><span class="sig-name descname"><span class="pre">generate_reflection_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigensolution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B_left</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.forced_problem.generate_reflection_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the reflection matrices from boundary matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>eigensolution</strong><span class="classifier">TYPE</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+<dt><strong>A_right</strong><span class="classifier">np.ndarray</span></dt><dd><p>A matrix on the right boundary.</p>
+</dd>
+<dt><strong>B_right</strong><span class="classifier">np.ndarray</span></dt><dd><p>B matrix on the right boundary.</p>
+</dd>
+<dt><strong>A_left</strong><span class="classifier">np.ndarray</span></dt><dd><p>A natrix on the left boundary.</p>
+</dd>
+<dt><strong>B_left</strong><span class="classifier">np.ndarray</span></dt><dd><p>B matrix on the left boundary.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>R_right</strong><span class="classifier">np.ndarray</span></dt><dd><p>Right reflection matrix.</p>
+</dd>
+<dt><strong>R_left</strong><span class="classifier">np.ndarray</span></dt><dd><p>Left reflection matrix.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.forced_problem.calculate_propagated_amplitudes">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.forced_problem.</span></span><span class="sig-name descname"><span class="pre">calculate_propagated_amplitudes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_minus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.forced_problem.calculate_propagated_amplitudes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the ampltiudes of waves after propagation to response point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>e_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>positive directly excited amplitudes.</p>
+</dd>
+<dt><strong>e_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>negative directly excited amplitudes.</p>
+</dd>
+<dt><strong>k_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>wavenumber array.</p>
+</dd>
+<dt><strong>L</strong><span class="classifier">float</span></dt><dd><p>DESCRIPTION.</p>
+</dd>
+<dt><strong>R_right</strong><span class="classifier">np.ndarray</span></dt><dd><p>Right reflection matrix.</p>
+</dd>
+<dt><strong>R_left</strong><span class="classifier">np.ndarray</span></dt><dd><p>Left reflection matrix.</p>
+</dd>
+<dt><strong>x_r</strong><span class="classifier">float, np.ndarray</span></dt><dd><p>Response distance.</p>
+</dd>
+<dt><strong>x_e</strong><span class="classifier">float, Excitation distance</span></dt><dd><p>DESCRIPTION. The default is 0.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>b_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>positive propagated amplitudes.</p>
+</dd>
+<dt><strong>b_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>negative propagated amplitudes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.forced_problem.calculate_modal_displacements">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.forced_problem.</span></span><span class="sig-name descname"><span class="pre">calculate_modal_displacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigensolution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_minus</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.forced_problem.calculate_modal_displacements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the displacement of each mode (last axis is modal)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>eigensolution</strong><span class="classifier">namedtuple</span></dt><dd><p>eigensolution.</p>
+</dd>
+<dt><strong>b_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>positive propagated amplitudes.</p>
+</dd>
+<dt><strong>b_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>negative propagated amplitudes.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>q_j_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>positive going modal displacements.</p>
+</dd>
+<dt><strong>q_j_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>negative going modal displacements.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.core.forced_problem.calculate_modal_forces">
+<span class="sig-prename descclassname"><span class="pre">pywfe.core.forced_problem.</span></span><span class="sig-name descname"><span class="pre">calculate_modal_forces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigensolution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_plus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_minus</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.core.forced_problem.calculate_modal_forces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the internal forces of each mode (last axis is modal)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>eigensolution</strong><span class="classifier">namedtuple</span></dt><dd><p>eigensolution.</p>
+</dd>
+<dt><strong>b_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>positive propagated amplitudes.</p>
+</dd>
+<dt><strong>b_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>negative propagated amplitudes.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>f_j_plus</strong><span class="classifier">np.ndarray</span></dt><dd><p>Positive going modal forces.</p>
+</dd>
+<dt><strong>f_j_minus</strong><span class="classifier">np.ndarray</span></dt><dd><p>Negative going modal forces.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -245,21 +401,23 @@ Column i is vector corresponding to vals[i]</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="model.html">model</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">core</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#model-setup">model_setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#eigensolvers">Eigensolvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#forced-problem">Forced Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eigensolvers">eigensolvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#classify-modes">classify_modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forced-problem">forced_problem</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="model.html">model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to pywfe’s documentation!</a></li>
-      <li>Next: <a href="model.html" title="next chapter">model</a></li>
+      <li>Previous: <a href="model.html" title="previous chapter">model</a></li>
+      <li>Next: <a href="utils.html" title="next chapter">utils</a></li>
   </ul></li>
 </ul>
 </div>

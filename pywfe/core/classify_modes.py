@@ -1,5 +1,5 @@
 """
-Classifying Wavemodes
+classify_modes
 ---------------------
 
 This module contains the functionality needed to sort eigensolutions of the

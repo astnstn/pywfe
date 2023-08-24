@@ -1,5 +1,5 @@
 """
-Eigensolvers
+eigensolvers
 ------------
 
 This module contains different solvers for the WFE eigenproblem.

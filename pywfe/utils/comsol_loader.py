@@ -1,5 +1,5 @@
 """
-COMSOL loader
+comsol_loader
 -------------
 
 This module contains the functionality needed to convert COMSOL data
