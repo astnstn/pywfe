@@ -55,7 +55,7 @@ def generate_coordinates(dof, x):
     return coords
 
 
-def sort_field(dof, displacements, vtk_fmt=True):
+def sort_field(dof, displacements, vtk_fmt=True, fieldmap=None):
     """
     This function sorts the displacements based on the field variables and prepares the displacement data
     to be written to a VTK file.
@@ -110,72 +110,50 @@ def sort_field(dof, displacements, vtk_fmt=True):
             field[key] = np.ascontiguousarray(field[key].real)
 
     # Return the field dictionary
+    if fieldmap is not None:
+
+        new_field = {}
+
+        for oldvar, newvar in fieldmap.items():
+
+            new_field[newvar] = field[oldvar]
+
+        return new_field
+
     return field
 
 
-def save_vtk(dof, filename, x_arr, displacements):
-    """
-    This function saves the model displacements to a VTK file.
+def save_field(filename, dof, x, field):
 
-    Args:
-        model (Model object): A model object that contains the nodes and degrees of freedom data.
-        filename (str): The name of the VTK file to be saved.
-        x_arr (ndarray): An array representing the x-axis coordinates.
-        displacements (ndarray): An array of displacements.
+    xx, yy, zz = generate_coordinates(dof, x)
 
-    Returns:
-        None. Writes data to a VTK file.
-    """
-    # First, sort the displacements and convert to real values
-    displacements = sort_field(dof, displacements, vtk_fmt=True)
+    for key in field.keys():
+        field[key] = np.ascontiguousarray(field[key].real)
 
-    # Generate the coordinates for the displacements
-    coords = generate_coordinates(dof, x_arr)
-    if len(coords) == 2:
-        coords.insert(-1, np.zeros_like(coords[0]))
+    pointsToVTK(filename, xx, yy, zz, field)
 
-    x, y, z = coords
+    # def save_vtk(dof, filename, x_arr, displacements):
+    #     """
+    #     This function saves the model displacements to a VTK file.
 
-    # Finally, write the displacements to the VTK file
-    pointsToVTK(filename, x, y, z, displacements)
+    #     Args:
+    #         model (Model object): A model object that contains the nodes and degrees of freedom data.
+    #         filename (str): The name of the VTK file to be saved.
+    #         x_arr (ndarray): An array representing the x-axis coordinates.
+    #         displacements (ndarray): An array of displacements.
 
+    #     Returns:
+    #         None. Writes data to a VTK file.
+    #     """
+    #     # First, sort the displacements and convert to real values
+    #     displacements = sort_field(dof, displacements, vtk_fmt=True)
 
-def select_fieldvar(dof, fieldvar):
+    #     # Generate the coordinates for the displacements
+    #     coords = generate_coordinates(dof, x_arr)
+    #     if len(coords) == 2:
+    #         coords.insert(-1, np.zeros_like(coords[0]))
 
-    # if dof has chosen fieldvar, keep it
+    #     x, y, z = coords
 
-    dofs = dof.copy()
-
-    selected_dofs = (dofs['fieldvar'] == fieldvar)
-
-    dofs['coord'] = dofs['coord'][:, selected_dofs]
-
-    for key in ['face', 'fieldvar', 'index', 'node']:
-        dofs[key] = dofs[key][selected_dofs]
-
-    return dofs
-
-
-def select_face(dof, face):
-
-    # if dof has chosen face, keep it
-
-    dofs = dof.copy()
-
-    selected_dofs = (dofs['face'] == face)
-
-    dofs['coord'] = dofs['coord'][:, selected_dofs]
-
-    for key in ['face', 'fieldvar', 'index', 'node']:
-        dofs[key] = dofs[key][selected_dofs]
-
-    return dofs
-
-
-def dof_selection(dof, output_vector):
-
-    selected_dofs = dof['index'][:len(dof['index'])//2]
-
-    print(selected_dofs)
-
-    return output_vector[..., selected_dofs]
+    #     # Finally, write the displacements to the VTK file
+    #     pointsToVTK(filename, x, y, z, displacements)

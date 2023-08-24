@@ -22,6 +22,7 @@ from pywfe.core.forced_problem import calculate_modal_forces
 from pywfe.core.forced_problem import generate_reflection_matrices
 from pywfe.utils.frequency_sweep import frequency_sweep
 from pywfe.utils.forcer import Forcer
+from pywfe.utils.io_utils import save
 import copy
 
 # solver dictionary which contains all the forms of the eigenproblem
@@ -101,6 +102,7 @@ class Model:
         None.
 
         """
+        self.description = None
 
         K, M = K.astype('complex'), M.astype('complex')
 
@@ -347,10 +349,18 @@ class Model:
 
         """
 
-        k = [self.wavenumbers(f=f,
-                              direction=direction,
-                              imag_threshold=imag_threshold)
-             for f in frequency_array]
+        # k = [self.wavenumbers(f=f,
+        #                       direction=direction,
+        #                       imag_threshold=imag_threshold)
+        #      for f in frequency_array]
+
+        k = []
+
+        for f in tqdm(frequency_array):
+
+            k.append(self.wavenumbers(f=f,
+                                      direction=direction,
+                                      imag_threshold=imag_threshold))
 
         return np.array(k)
 
@@ -375,10 +385,13 @@ class Model:
 
         """
 
-        k = [self.wavenumbers(f=f,
-                              direction=direction,
-                              imag_threshold=imag_threshold)
-             for f in frequency_array]
+        k = []
+
+        for f in tqdm(frequency_array):
+
+            k.append(self.wavenumbers(f=f,
+                                      direction=direction,
+                                      imag_threshold=imag_threshold))
 
         k = np.array(k)
 
@@ -735,3 +748,7 @@ class Model:
 
         self.forcer = Forcer(self)
         self.forcer.select_nodes()
+
+    def save(self, folder, source='local'):
+
+        save(folder, self, source=source)

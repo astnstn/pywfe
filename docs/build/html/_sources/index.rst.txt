@@ -20,15 +20,7 @@ This package implements the Wave Finite Element Method (WFEM) in Python to analy
 
 **Currently only works for infinite waveguides.**
 
-The `pywfe.Model` class provides a high level api to calculate the free and forced response in the waveguide. It is initialised with the stiffness and mass matrix
-:math:`K` and :math:`M`. It is assumed that there is a shared ordering between rows and columns of these matrices. The :math:`N` degrees of freedom are described by arrays with shapes
-
-- coordinate :math:`(n_D, N)`
-- node number :math:`(N)`
-- field variable :math:`(N)`
-- index :math:`(N)`
-
-Where :math:`n_D` is the number of spatial dimensions and ``coordinate[0]`` ideally gives the axial coordinate array.
+The `pywfe.Model` class provides a high level api to calculate the free and forced response in the waveguide. 
 
 .. toctree::
    :maxdepth: 2

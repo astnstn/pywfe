@@ -14,7 +14,6 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pywfe.Model Class" href="model.html" />
@@ -43,15 +42,7 @@
 <h3>Purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">¶</a></h3>
 <p>This package implements the Wave Finite Element Method (WFEM) in Python to analyse guided waves in 1 dimension. Initially Written to analyse mechanical waves in fluid filled pipes meshed in COMSOL.</p>
 <p><strong>Currently only works for infinite waveguides.</strong></p>
-<p>The <cite>pywfe.Model</cite> class provides a high level api to calculate the free and forced response in the waveguide. It is initialised with the stiffness and mass matrix
-<span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(M\)</span>. It is assumed that there is a shared ordering between rows and columns of these matrices. The <span class="math notranslate nohighlight">\(N\)</span> degrees of freedom are described by arrays with shapes</p>
-<ul class="simple">
-<li><p>coordinate <span class="math notranslate nohighlight">\((n_D, N)\)</span></p></li>
-<li><p>node number <span class="math notranslate nohighlight">\((N)\)</span></p></li>
-<li><p>field variable <span class="math notranslate nohighlight">\((N)\)</span></p></li>
-<li><p>index <span class="math notranslate nohighlight">\((N)\)</span></p></li>
-</ul>
-<p>Where <span class="math notranslate nohighlight">\(n_D\)</span> is the number of spatial dimensions and <code class="docutils literal notranslate"><span class="pre">coordinate[0]</span></code> ideally gives the axial coordinate array.</p>
+<p>The <cite>pywfe.Model</cite> class provides a high level api to calculate the free and forced response in the waveguide.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
