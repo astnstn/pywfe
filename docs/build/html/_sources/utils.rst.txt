@@ -5,6 +5,9 @@ utils
    :local:
    :depth: 2
 
+.. automodule:: pywfe.utils.io_utils
+   :members:
+
 .. automodule:: pywfe.utils.comsol_loader
    :members:
 

@@ -55,7 +55,7 @@ def generate_coordinates(dof, x):
     return coords
 
 
-def sort_field(dof, displacements, vtk_fmt=True, fieldmap=None):
+def vtk_sort(dof, displacements, vtk_fmt=True, fieldmap=None):
     """
     This function sorts the displacements based on the field variables and prepares the displacement data
     to be written to a VTK file.
@@ -123,9 +123,15 @@ def sort_field(dof, displacements, vtk_fmt=True, fieldmap=None):
     return field
 
 
-def save_field(filename, dof, x, field):
+def vtk_save(filename, dof, x, field):
 
-    xx, yy, zz = generate_coordinates(dof, x)
+    coords = generate_coordinates(dof, x)
+    
+    if len(coords) == 2:
+        xx, yy = coords
+        zz = np.zeros_like(xx)
+    else:
+        xx, yy, zz = coords
 
     for key in field.keys():
         field[key] = np.ascontiguousarray(field[key].real)

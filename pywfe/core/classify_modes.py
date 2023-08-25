@@ -14,11 +14,28 @@ logger.setLevel(logging.INFO)
 
 
 def classify_wavemode(f, eigenvalue, eigenvector, threshold):
+    """
+    Identify if a wavemode is positive going or negative going
+
+    Parameters
+    ----------
+    f : float
+        frequency of eigensolution.
+    eigenvalue : complex
+        Eigenvalue to be checked.
+    eigenvector : nodarray, complex
+        Corresponding eigenvector.
+    threshold : float
+        Threshold for classification. How close to unity does an eigenvalue have to be?
+
+    Returns
+    -------
+    direction : str
+        ``'right'`` or ``'left'``.
+
+    """
 
     logger.debug(f"eigenvalue size {abs(eigenvalue)}")
-
-    _k = -np.log(eigenvalue)/(1j)
-    _k = np.sign(_k.real)
 
     # if the eigenvalue is above 1 + threshold
     if abs(eigenvalue) > 1 + threshold:
@@ -48,11 +65,30 @@ def classify_wavemode(f, eigenvalue, eigenvector, threshold):
 
             direction = "left"
 
-    # print(f"size: {abs(eigenvalue)}, k sign: {_k}, eval: {direction}")
     return direction
 
 
 def sort_eigensolution(f, eigenvalues, right_eigenvectors, left_eigenvectors):
+    """
+    Sort the eigensolution into positive and negative going waves
+
+    Parameters
+    ----------
+    f : float
+        Frequency of eigensolution.
+    eigenvalues : ndarray, complex
+        Eigenvalues solved at this frequency.
+    right_eigenvectors : ndarray, complex
+        Right eigenvectors solved at this frequency.
+    left_eigenvectors : TYPE
+        Left eigenvectors solved at this frequency..
+
+    Returns
+    -------
+    named tuple
+        Eigensolution tuple.
+
+    """
 
     # the total counted positive and negative going waves
     positive_count = 0
@@ -60,13 +96,6 @@ def sort_eigensolution(f, eigenvalues, right_eigenvectors, left_eigenvectors):
 
     N = len(eigenvalues)
 
-    # somewhat arbitrarily chosen inital threshold
-    # it finds values close to one and takes their standard deviation
-    values_close_to_one = eigenvalues[abs(1 - abs(eigenvalues)) < 0.01]
-
-    mean_offset = np.mean(abs(1 - abs(values_close_to_one)))
-    mean_offset = mean_offset/5
-    threshold = mean_offset + np.std(abs(1 - abs(values_close_to_one)))/5
     # print(mean_offset, threshold)
     threshold = 1e-8
 

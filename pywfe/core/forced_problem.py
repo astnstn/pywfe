@@ -123,15 +123,15 @@ def calculate_propagated_amplitudes(e_plus, e_minus, k_plus,
     k_plus : np.ndarray
         wavenumber array.
     L : float
-        DESCRIPTION.
+        Length of waveguide.
     R_right : np.ndarray
         Right reflection matrix.
     R_left : np.ndarray
         Left reflection matrix.
     x_r : float, np.ndarray
         Response distance.
-    x_e : float, Excitation distance
-        DESCRIPTION. The default is 0.
+    x_e : float, 
+        Excitation distance. The default is 0.
 
     Returns
     -------

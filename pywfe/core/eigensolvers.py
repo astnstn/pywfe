@@ -71,7 +71,27 @@ def transfer_matrix(DSM):
 
 
 def polynomial(DSM):
+    """
+    [unfinished] Polynomial form of the eigenproblem
 
+    Parameters
+    ----------
+    DSM : (N,N) ndarray (float or complex)
+        The dynamic stiffness matrix of the system. 
+        NxN array of type float or complex.
+
+    Returns
+    -------
+    vals : ndarray
+        1-D array of length N type complex.
+    left_eigenvectors : ndarray
+        NxN array of type float or complex.
+        Column i is vector corresponding to vals[i]
+    right_eigenvectors : ndarray
+        NxN array of type float or complex.
+        Column i is vector corresponding to vals[i]
+
+    """
     n = len(DSM)
 
     D_LL = DSM[:n//2, :n//2]
@@ -86,7 +106,7 @@ def polynomial(DSM):
     B[n//2:, :n//2] = -np.linalg.inv(D_LR) @ D_RL
     B[n//2:, n//2:] = -np.linalg.inv(D_LR) @ (D_LL + D_RR)
 
-    vals, vecs, left_vecs = scipy.linalg.eig(B, left=True)
+    # vals, vecs, left_vecs = scipy.linalg.eig(B, left=True)
     vals, vecs = np.linalg.eig(B)
 
     for i in range(vecs.shape[-1]):

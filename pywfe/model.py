@@ -112,15 +112,13 @@ class Model:
 
         # Set up logging
 
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
+        self.logger = logging.getLogger('pywfe')
+        # logging.basicConfig(format=('%(asctime)s %(levelname)-8s'
+        #                             '[%(filename)s:%(lineno)d] %(message)s'),
+        #                     datefmt='%Y-%m-%d:%H:%M:%S',
+        #                     level=logging_level)
 
-        logging.basicConfig(format=('%(asctime)s %(levelname)-8s'
-                                    '[%(filename)s:%(lineno)d] %(message)s'),
-                            datefmt='%Y-%m-%d:%H:%M:%S',
-                            level=logging_level)
-
-        logging.info("Initalising WFE model")
+        self.logger.info("Initalising WFE model")
 
         unconstrained_dofs = len(K)
 
@@ -130,12 +128,13 @@ class Model:
         # apply boundary coniditions if needed
         if null is not None and nullf is not None:
 
-            logging.info("Applying boundary conditions")
+            self.logger.info("Applying boundary conditions")
 
             K, M, dof = model_setup.apply_boundary_conditions(
                 K, M, dof, null, nullf)
 
-            logging.info(f"dofs reduced from {unconstrained_dofs} to {len(K)}")
+            self.logger.info(
+                f"dofs reduced from {unconstrained_dofs} to {len(K)}")
 
         # order the dofs into left and right faces
         K, M, dof = model_setup.order_system_faces(K, M, dof)
@@ -167,13 +166,13 @@ class Model:
         self.N = int(np.sum(self.dof['face'] == 'L')*2)
         """Number of dofs on both left and right faces combined"""
 
-        # do some logging for debug purposes
+        # do some self.logger for debug purposes
         init_debug = ["Model initialised",
                       f"Segment length: {self.delta}",
                       f"Total ndof: {len(K)}",
                       f"Condensed ndof {self.N}"]
 
-        [logging.info(line) for line in init_debug]
+        [self.logger.info(line) for line in init_debug]
 
         self.frequency = -1
         self.eigensolution = ()
@@ -188,7 +187,11 @@ class Model:
         zero_boundary = np.zeros((self.N//2, self.N//2))
         self.boundaries = Boundaries(*[zero_boundary]*4)
 
-        logging.debug("debugging...")
+        self.logger.debug("debugging...")
+
+    def __repr__(self):
+
+        return f"pywfe.Model(N = {self.N})"
 
     def is_same_frequency(self, f):
         """
@@ -660,6 +663,11 @@ class Model:
             Displacements over frequency and distance.
 
         """
+        print(
+            f"calculating transfer function between {min(f_arr)} and {max(f_arr)} with {len(f_arr)} points")
+        print(f"x_r : {x_r}")
+        print(self)
+
         if dofs == "all":
             dofs = slice(0, self.N//2)
 
@@ -674,6 +682,7 @@ class Model:
 
             displacements.append(self.displacements(x_r, f)[..., dofs])
 
+        print(f"MEAN TRF: {np.mean(displacements)}")
         return np.squeeze(np.array(displacements))
 
     def select_dofs(self, fieldvar=None):
@@ -750,5 +759,20 @@ class Model:
         self.forcer.select_nodes()
 
     def save(self, folder, source='local'):
+        """
+        Save the model to a folder
+
+        Parameters
+        ----------
+        folder : str
+            folder name.
+        source : str, optional
+            Save to ``'local'`` or ``'database'``. The default is 'local'.
+
+        Returns
+        -------
+        None.
+
+        """
 
         save(folder, self, source=source)

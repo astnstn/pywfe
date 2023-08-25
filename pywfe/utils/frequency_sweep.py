@@ -11,8 +11,7 @@ from pywfe.utils.modal_assurance import sorting_indices
 from tqdm import tqdm
 
 
-def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False,
-                    imag_threshold=None, dofs='all'):
+def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False, dofs='all'):
 
     if dofs == "all":
         dofs = slice(0, model.N//2)
@@ -83,22 +82,6 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False,
 
                 F = model.forces(x_r, f_arr[i])
                 output['forces'].append(F)
-
-                # D = model.form_dsm(f_arr[i])
-                # D_LL = D[:model.N//2, :model.N//2]
-
-                # # print(D_LL.shape, q.shape)
-
-                # if q is not None:
-                #     # Ensure v is a 2D array
-                #     q = np.atleast_2d(q)
-
-                #     # Perform matrix multiplication
-                #     # print(D_LL.shape, q.T.shape)
-                #     F = D_LL @ q.T
-                #     F = F.T  # Transpose back to original shape
-
-                #     output["forces"].append(F)
 
     for key in output.keys():
         output[key] = np.squeeze(np.array(output[key]))
