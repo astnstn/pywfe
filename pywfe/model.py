@@ -187,8 +187,6 @@ class Model:
         zero_boundary = np.zeros((self.N//2, self.N//2))
         self.boundaries = Boundaries(*[zero_boundary]*4)
 
-        self.logger.debug("debugging...")
-
     def __repr__(self):
 
         return f"pywfe.Model(N = {self.N})"
@@ -644,7 +642,7 @@ class Model:
         """
         return frequency_sweep(self, f_arr, quantities, x_r=x_r, mac=mac, dofs=dofs)
 
-    def transfer_function(self, f_arr, x_r, dofs="all"):
+    def transfer_function(self, f_arr, x_r, dofs="all", derivative=0):
         """
         Gets the displacement over frequency at specified distance and dofs.
 
@@ -663,10 +661,6 @@ class Model:
             Displacements over frequency and distance.
 
         """
-        print(
-            f"calculating transfer function between {min(f_arr)} and {max(f_arr)} with {len(f_arr)} points")
-        print(f"x_r : {x_r}")
-        print(self)
 
         if dofs == "all":
             dofs = slice(0, self.N//2)
@@ -680,9 +674,11 @@ class Model:
 
         for f in tqdm(f_arr):
 
-            displacements.append(self.displacements(x_r, f)[..., dofs])
+            output = ((1j*2*np.pi*f)**derivative) * \
+                self.displacements(x_r, f)[..., dofs]
 
-        print(f"MEAN TRF: {np.mean(displacements)}")
+            displacements.append(output)
+
         return np.squeeze(np.array(displacements))
 
     def select_dofs(self, fieldvar=None):

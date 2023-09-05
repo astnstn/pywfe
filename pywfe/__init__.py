@@ -6,7 +6,7 @@ from pywfe.utils.forcer import Forcer
 from pywfe.utils.vtk_tools import vtk_sort, vtk_save
 from pywfe.utils.shaker import Shaker
 from pywfe.utils.logging_config import log
-
+from pywfe.utils.trf_interpolator import interpolate
 log()
 
 import os

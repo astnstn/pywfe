@@ -17,7 +17,7 @@ def passed_function(f_arr, func, *args, **kwargs):
     return q
 
 
-def interpolator(f_arr, q0, func, n_pass=4, tolerance=5, *args, **kwargs):
+def interpolate(f_arr, q0, func, n_pass=4, tolerance=5, *args, **kwargs):
 
     print("!!")
 

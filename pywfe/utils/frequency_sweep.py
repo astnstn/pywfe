@@ -21,20 +21,30 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False, dofs='all'):
 
     output = {quantity: [] for quantity in quantities}
 
+    # if modally sorting
     if mac:
+        # set the 'previous' positive eigenvector to the first solution
         phi_previous = model.generate_eigensolution(f_arr[0]).phi_plus
     else:
+        # else no sorting
         inds = np.arange(model.N//2)
 
     for i in tqdm(range(len(f_arr))):
 
+        # if modal assurance
         if mac:
+            # generate the 'next' eigensolution (current frequency)
             phi_next = model.generate_eigensolution(f_arr[i]).phi_plus
+            # get the sorting indices from pywfe.modal_assurance.sorting_indices
             inds = sorting_indices(phi_previous, phi_next)
+            # cache the sorted current (to be previous) frequency
             phi_previous = phi_next[:, inds]
 
-        # print(inds)
         for quantity in quantities:
+
+            if quantity == "phi_plus":
+
+                output['phi_plus'].append(phi_previous)
 
             if quantity == "excited_amplitudes":
 
@@ -80,7 +90,8 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False, dofs='all'):
 
             if quantity == "forces":
 
-                F = model.forces(x_r, f_arr[i])
+                F = model.forces(x_r, f_arr[i])[..., dofs]
+
                 output['forces'].append(F)
 
     for key in output.keys():
