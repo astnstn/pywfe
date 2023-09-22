@@ -1,10 +1,10 @@
 """
-model
-------------
+   model
+   ------------
 
-This module contains the Model class which serves an API for most required
-WFE functionality.
-"""
+   This module contains the Model class which serves an API for most required
+   WFE functionality.
+   """
 
 import logging
 import numpy as np

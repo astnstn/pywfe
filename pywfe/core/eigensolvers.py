@@ -67,6 +67,9 @@ def transfer_matrix(DSM):
     eigenvalues, left_eigenvectors, right_eigenvectors = scipy.linalg.eig(
         T, left=True)
 
+    # eigenvalues, right_eigenvectors = np.linalg.eig(T)
+    # left_eigenvectors = right_eigenvectors
+
     return eigenvalues, right_eigenvectors, left_eigenvectors
 
 
