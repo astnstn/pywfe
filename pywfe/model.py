@@ -1,29 +1,29 @@
-"""
-   model
-   ------------
-
-   This module contains the Model class which serves an API for most required
-   WFE functionality.
-   """
-
-import logging
-import numpy as np
-from functools import wraps
-from tqdm import tqdm
-from pywfe.types import Boundaries
-from pywfe.core import model_setup
-from pywfe.core import eigensolvers
-from pywfe.core import boundary_conditions
-from pywfe.core.classify_modes import sort_eigensolution
-from pywfe.core.forced_problem import calculate_excited_amplitudes
-from pywfe.core.forced_problem import calculate_propagated_amplitudes
-from pywfe.core.forced_problem import calculate_modal_displacements
-from pywfe.core.forced_problem import calculate_modal_forces
-from pywfe.core.forced_problem import generate_reflection_matrices
-from pywfe.utils.frequency_sweep import frequency_sweep
-from pywfe.utils.forcer import Forcer
-from pywfe.utils.io_utils import save
 import copy
+from pywfe.utils.io_utils import save
+from pywfe.utils.forcer import Forcer
+from pywfe.utils.frequency_sweep import frequency_sweep
+from pywfe.core.forced_problem import generate_reflection_matrices
+from pywfe.core.forced_problem import calculate_modal_forces
+from pywfe.core.forced_problem import calculate_modal_displacements
+from pywfe.core.forced_problem import calculate_propagated_amplitudes
+from pywfe.core.forced_problem import calculate_excited_amplitudes
+from pywfe.core.classify_modes import sort_eigensolution
+from pywfe.core import boundary_conditions
+from pywfe.core import eigensolvers
+from pywfe.core import model_setup
+from pywfe.types import Boundaries
+from tqdm import tqdm
+from functools import wraps
+import numpy as np
+import logging
+"""
+model
+-----
+
+This module contains the Model class which serves an API for most required
+WFE functionality.
+"""
+
 
 # solver dictionary which contains all the forms of the eigenproblem
 solver = eigensolvers.solver
