@@ -163,7 +163,7 @@ Options are currently <code class="docutils literal notranslate"><span class="pr
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.dispersion_relation" title="pywfe.Model.dispersion_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispersion_relation</span></code></a>(frequency_array[, ...])</p></td>
 <td><p>Calculate frequency-wavenumber relation</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.displacements" title="pywfe.Model.displacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displacements</span></code></a>(x_r[, f])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.displacements" title="pywfe.Model.displacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displacements</span></code></a>(x_r[, f, dofs])</p></td>
 <td><p>gets the displacements for all degrees of freedom at specified x and f.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.excited_amplitudes" title="pywfe.Model.excited_amplitudes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">excited_amplitudes</span></code></a>([f])</p></td>
@@ -181,7 +181,7 @@ Options are currently <code class="docutils literal notranslate"><span class="pr
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.generate_eigensolution" title="pywfe.Model.generate_eigensolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_eigensolution</span></code></a>(f)</p></td>
 <td><p>Generates the sorted eigensolution at a given frequency.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.modal_displacements" title="pywfe.Model.modal_displacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modal_displacements</span></code></a>(x_r[, f])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.modal_displacements" title="pywfe.Model.modal_displacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modal_displacements</span></code></a>(x_r[, f, dofs])</p></td>
 <td><p>Calculate the modal displacements at a given distance and frequency.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.modal_forces" title="pywfe.Model.modal_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modal_forces</span></code></a>(x_r[, f])</p></td>
@@ -205,11 +205,21 @@ Options are currently <code class="docutils literal notranslate"><span class="pr
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.selection_index" title="pywfe.Model.selection_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">selection_index</span></code></a>(dof)</p></td>
 <td><p>Get the dof indices for a given selection.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer_function</span></code></a>(f_arr, x_r[, dofs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer_function</span></code></a>(f_arr, x_r[, dofs, derivative])</p></td>
 <td><p>Gets the displacement over frequency at specified distance and dofs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.wavenumbers" title="pywfe.Model.wavenumbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavenumbers</span></code></a>([f, direction, imag_threshold])</p></td>
 <td><p>Calculates the wavenumbers of the system at a given frequency</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>dofs_to_indices</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>left_dofs</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -451,7 +461,7 @@ for a given distance and frequency.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pywfe.Model.modal_displacements">
-<span class="sig-name descname"><span class="pre">modal_displacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.modal_displacements" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">modal_displacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dofs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.modal_displacements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the modal displacements at a given distance and frequency.
 Each column corresponds to a different wavemode, each row is
 a different degree of freedom.</p>
@@ -475,7 +485,7 @@ a different degree of freedom.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pywfe.Model.displacements">
-<span class="sig-name descname"><span class="pre">displacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.displacements" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">displacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dofs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.displacements" title="Permalink to this definition">¶</a></dt>
 <dd><p>gets the displacements for all degrees of freedom at specified x and f.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -570,7 +580,7 @@ Includes Modal Assurance Critereon (MAC) sorting.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pywfe.Model.transfer_function">
-<span class="sig-name descname"><span class="pre">transfer_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dofs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.transfer_function" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transfer_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dofs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.transfer_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the displacement over frequency at specified distance and dofs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -33,3 +33,11 @@ def sorting_indices(modes_prev, modes_next):
     sorting_order = np.argmax(matrix, axis=1)
 
     return sorting_order
+
+
+def sort_wavenumbers(wavenumbers):
+
+    avg_imag = np.mean(np.abs(wavenumbers.imag), axis=0)
+    sorted_indices = np.argsort(avg_imag)
+
+    return sorted_indices

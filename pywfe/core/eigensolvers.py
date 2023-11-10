@@ -80,7 +80,7 @@ def polynomial(DSM):
     Parameters
     ----------
     DSM : (N,N) ndarray (float or complex)
-        The dynamic stiffness matrix of the system. 
+        The dynamic stiffness matristrucaxisym-x of the system. 
         NxN array of type float or complex.
 
     Returns

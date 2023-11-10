@@ -123,10 +123,78 @@ def vtk_sort(dof, displacements, vtk_fmt=True, fieldmap=None):
     return field
 
 
-def vtk_save(filename, dof, x, field):
+def sort_to_vtk(displacements, dof, vtk_fmt=True, fieldmap=None):
+    """
+    This function sorts the displacements based on the field variables and prepares the displacement data
+    to be written to a VTK file.
+
+    Args:
+        model (Model object): A model object that contains the nodes and degrees of freedom data.
+        displacements (ndarray): An array of displacements, it can be 1D or 2D.
+        vtk_fmt (boolean, optional): If True, all values in the field dictionary are converted to real values. 
+                                      Defaults to False.
+
+    Returns:
+        field (dict): A dictionary where each key corresponds to a unique field variable ('fieldvar')
+                      and each value is a contiguous array of displacements corresponding to that fieldvar.
+    """
+    node = model_setup.create_node_dict(dof)
+
+    # Getting all unique fieldvar values from the model's degrees of freedom
+    all_fieldvars = list(set(dof['fieldvar'].tolist()))
+
+    # Initializing a dictionary with the fieldvar values as keys
+    field = dict.fromkeys(all_fieldvars)
+
+    # If the displacements are one dimensional, reshape them into a 2D array
+    if len(displacements.shape) == 1:
+        displacements = np.reshape(displacements, (1, len(displacements)))
+
+    # Get the length of the input displacements array
+    x_len = displacements.shape[0]
+    # Get the number of nodes in the model
+    disp_len = len(node['number'])
+
+    # For each fieldvar, initialize an array of zeros with size equal to the number of nodes times the length of displacements
+    for var in all_fieldvars:
+        field[var] = np.ascontiguousarray(
+            np.zeros((disp_len*x_len), dtype='complex'))
+
+    # Iterate over all nodes in the model
+    for i in range(len(node['number'])):
+        # For each degree of freedom in the current node
+        for j in range(len(node['dof'][i])):
+            # Get the current fieldvar and dof
+            var = node['fieldvar'][i][j]
+            dof = node['dof'][i][j]
+
+            # For each displacement, add it to the corresponding fieldvar array in the field dictionary
+            for k in range(x_len):
+                field[var][i + k*disp_len] = displacements[k, dof]
+
+    # If vtk_fmt flag is set, convert all values in the field dictionary to real values
+    if vtk_fmt:
+        for key in field.keys():
+            field[key] = np.ascontiguousarray(field[key].real)
+
+    # Return the field dictionary
+    if fieldmap is not None:
+
+        new_field = {}
+
+        for oldvar, newvar in fieldmap.items():
+
+            new_field[newvar] = field[oldvar]
+
+        return new_field
+
+    return field
+
+
+def vtk_save(filename, dof, x, field, fieldmap=None):
 
     coords = generate_coordinates(dof, x)
-    
+
     if len(coords) == 2:
         xx, yy = coords
         zz = np.zeros_like(xx)
@@ -138,28 +206,19 @@ def vtk_save(filename, dof, x, field):
 
     pointsToVTK(filename, xx, yy, zz, field)
 
-    # def save_vtk(dof, filename, x_arr, displacements):
-    #     """
-    #     This function saves the model displacements to a VTK file.
 
-    #     Args:
-    #         model (Model object): A model object that contains the nodes and degrees of freedom data.
-    #         filename (str): The name of the VTK file to be saved.
-    #         x_arr (ndarray): An array representing the x-axis coordinates.
-    #         displacements (ndarray): An array of displacements.
+def save_as_vtk(filename, field_array, x, dof, fieldmap=None):
 
-    #     Returns:
-    #         None. Writes data to a VTK file.
-    #     """
-    #     # First, sort the displacements and convert to real values
-    #     displacements = sort_field(dof, displacements, vtk_fmt=True)
+    coords = generate_coordinates(dof, x)
+    field = sort_to_vtk(field_array, dof, fieldmap=fieldmap)
 
-    #     # Generate the coordinates for the displacements
-    #     coords = generate_coordinates(dof, x_arr)
-    #     if len(coords) == 2:
-    #         coords.insert(-1, np.zeros_like(coords[0]))
+    if len(coords) == 2:
+        xx, yy = coords
+        zz = np.zeros_like(xx)
+    else:
+        xx, yy, zz = coords
 
-    #     x, y, z = coords
+    for key in field.keys():
+        field[key] = np.ascontiguousarray(field[key].real)
 
-    #     # Finally, write the displacements to the VTK file
-    #     pointsToVTK(filename, x, y, z, displacements)
+    pointsToVTK(filename, xx, yy, zz, field)

@@ -47,11 +47,14 @@ def handle_iterable_xr(func):
 
     """
     @wraps(func)
-    def wrapper(self, x_r, f=None):
+    # Add **kwargs to accept any number of keyword arguments
+    def wrapper(self, x_r, f=None, **kwargs):
         if hasattr(x_r, '__iter__') and not isinstance(x_r, str):
-            return np.array([func(self, _x_r, f) for _x_r in x_r])
+            # Pass **kwargs to the function inside the list comprehension
+            return np.array([func(self, _x_r, f, **kwargs) for _x_r in x_r])
         else:
-            return func(self, x_r, f)
+            # Pass **kwargs to the function call
+            return func(self, x_r, f, **kwargs)
     return wrapper
 
 
@@ -111,13 +114,7 @@ class Model:
         """Description of solver."""
 
         # Set up logging
-
         self.logger = logging.getLogger('pywfe')
-        # logging.basicConfig(format=('%(asctime)s %(levelname)-8s'
-        #                             '[%(filename)s:%(lineno)d] %(message)s'),
-        #                     datefmt='%Y-%m-%d:%H:%M:%S',
-        #                     level=logging_level)
-
         self.logger.info("Initalising WFE model")
 
         unconstrained_dofs = len(K)
@@ -190,6 +187,46 @@ class Model:
     def __repr__(self):
 
         return f"pywfe.Model(N = {self.N})"
+
+    def dofs_to_indices(self, dofs):
+        """
+
+
+        Parameters
+        ----------
+        dofs : str or list or dict
+            'all' specifies all dofs.
+            A list of integers is interpreted as the dof indices.
+            A dof dictionary, created with `model.select_dofs()`
+
+        Returns
+        -------
+        inds : np.ndarray
+            array of dof indices.
+
+        """
+
+        if dofs == "all":
+            inds = slice(0, self.N//2)
+
+        elif isinstance(dofs, dict):
+
+            inds = self.selection_index(dofs)
+
+        elif isinstance(dofs, list):
+
+            if isinstance(dofs[0], str):
+                dofs = self.select_dofs(fieldvar=dofs)
+                inds = self.selection_index(dofs)
+
+            else:
+                inds = np.array(dofs)
+
+        elif isinstance(dofs, str):
+            dofs = self.select_dofs(fieldvar=dofs)
+            inds = self.selection_index(dofs)
+
+        return inds
 
     def is_same_frequency(self, f):
         """
@@ -349,12 +386,6 @@ class Model:
             (nfreq, n_waves) sized array of type complex.
 
         """
-
-        # k = [self.wavenumbers(f=f,
-        #                       direction=direction,
-        #                       imag_threshold=imag_threshold)
-        #      for f in frequency_array]
-
         k = []
 
         for f in tqdm(frequency_array):
@@ -416,35 +447,26 @@ class Model:
         e_minus : ndarray
             Negative excited wave amplitudes.
         """
-        # print("entering super (base) excited amplitudes")
-        # print(f"super force: {self.force[82]}")
-
         # if the force has been unchanged from prior calculations
         is_same_force = np.all(self.force == self._previous_force)
 
         # if same force and frequency, then we can reuse e_plus/e_minus
         if is_same_force and self.is_same_frequency(f):
 
-            # print("same force and freq")
-
             # if it hasn't been calculated yet, do so
             if (self.solution.get('e', None) is None or
                     self.solution.get('e_freq', None) != f):
 
-                # print("freshly calculating")
-
                 (e_plus,
                  e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
                                                          self.force)
-            # otherwise reuse the solution
 
+            # otherwise reuse the solution
             else:
-                # print("reusing solution")
                 (e_plus, e_minus) = self.solution['e']
 
         # if there is a different force or frequency involved, needs recalculating
         else:
-            # print("freshly recalculating")
             (e_plus,
              e_minus) = calculate_excited_amplitudes(self.generate_eigensolution(f),
                                                      self.force)
@@ -518,7 +540,7 @@ class Model:
                                                x_r, x_e=self.x_e)
 
     @ handle_iterable_xr
-    def modal_displacements(self, x_r, f=None):
+    def modal_displacements(self, x_r, f=None, dofs='all'):
         """
         Calculate the modal displacements at a given distance and frequency.
         Each column corresponds to a different wavemode, each row is
@@ -536,13 +558,17 @@ class Model:
         q_j_plus, q_j_minus : ndarray
             The modal displacements for positive and negative going waves.
         """
+        dofs = self.dofs_to_indices(dofs)
+
         b_plus, b_minus = self.propagated_amplitudes(x_r, f)
 
-        return calculate_modal_displacements(self.generate_eigensolution(f),
-                                             b_plus, b_minus)
+        q_j_plus, q_j_minus = calculate_modal_displacements(self.generate_eigensolution(f),
+                                                            b_plus, b_minus)
+
+        return q_j_plus[dofs], q_j_minus[dofs]
 
     @ handle_iterable_xr
-    def displacements(self, x_r, f=None):
+    def displacements(self, x_r, f=None, dofs='all'):
         """
         gets the displacements for all degrees of freedom at specified x and f.
 
@@ -559,16 +585,17 @@ class Model:
             displacements for each degree of freedom.
 
         """
+
         # just sum up the modal displacements over the last axis
         # which means superimposing the modal displacements of each wave
-        q_j_plus, q_j_minus = self.modal_displacements(x_r, f=f)
+        q_j_plus, q_j_minus = self.modal_displacements(x_r, f=f, dofs=dofs)
 
         q_j = q_j_plus + q_j_minus
 
         return np.sum(q_j, axis=-1)
 
     @ handle_iterable_xr
-    def modal_forces(self, x_r, f=None):
+    def modal_forces(self, x_r, f=None, dofs='all'):
         """
         Generates the modal forces at given distance and frequency
 
@@ -585,13 +612,17 @@ class Model:
             modal force array.
 
         """
+        dofs = self.dofs_to_indices(dofs)
+
         b_plus, b_minus = self.propagated_amplitudes(x_r, f)
 
-        return calculate_modal_forces(self.generate_eigensolution(f),
-                                      b_plus, b_minus)
+        q_j_plus, q_j_minus = calculate_modal_forces(self.generate_eigensolution(f),
+                                                     b_plus, b_minus)
+
+        return q_j_plus[dofs], q_j_minus[dofs]
 
     @ handle_iterable_xr
-    def forces(self, x_r, f=None):
+    def forces(self, x_r, f=None, dofs='all'):
         """
         Gets the total force on each degree of freedom.
 
@@ -609,7 +640,7 @@ class Model:
 
         """
 
-        f_j_plus, f_j_minus = self.modal_forces(x_r, f=f)
+        f_j_plus, f_j_minus = self.modal_forces(x_r, f=f, dofs=dofs)
 
         f_j = f_j_plus + f_j_minus
 
@@ -662,15 +693,9 @@ class Model:
 
         """
 
-        if dofs == "all":
-            dofs = slice(0, self.N//2)
-
-        else:
-            dofs = np.array(dofs)
+        dofs = self.dofs_to_indices(dofs)
 
         displacements = []
-
-        # displacements = [self.displacements(x_r, f)[dofs] for f in f_arr]
 
         for f in tqdm(f_arr):
 
@@ -697,17 +722,7 @@ class Model:
             Reduced dof dictionary.
 
         """
-
-        # select the dofs on the left face (the only important ones)
-
-        dofs = self.dof.copy()
-
-        selected_dofs = (dofs['face'] == 'L')
-
-        dofs['coord'] = dofs['coord'][:, selected_dofs]
-
-        for key in ['face', 'fieldvar', 'index', 'node']:
-            dofs[key] = dofs[key][selected_dofs]
+        dofs = self.left_dofs()
 
         if fieldvar is not None:
 
@@ -717,6 +732,19 @@ class Model:
 
             for key in ['face', 'fieldvar', 'index', 'node']:
                 dofs[key] = dofs[key][selected_dofs]
+
+        return dofs
+
+    def left_dofs(self):
+
+        dofs = self.dof.copy()
+
+        selected_dofs = (dofs['face'] == 'L')
+
+        dofs['coord'] = dofs['coord'][:, selected_dofs]
+
+        for key in ['face', 'fieldvar', 'index', 'node']:
+            dofs[key] = dofs[key][selected_dofs]
 
         return dofs
 
@@ -750,7 +778,6 @@ class Model:
 
         # this essentially generates an interactive matplotlib of the mesh
         # used for seeing what dofs are where so you can add specific forcing
-
         self.forcer = Forcer(self)
         self.forcer.select_nodes()
 

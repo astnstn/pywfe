@@ -1,6 +1,7 @@
 """
 Boundary Conditions
 -------------------
+***UNFINISHED - NOT IN USE***
 
 This module contains functions for generating the boundary conidition matrices
 """

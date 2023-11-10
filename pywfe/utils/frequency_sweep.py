@@ -12,6 +12,41 @@ from tqdm import tqdm
 
 
 def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False, dofs='all'):
+    """
+    Perform a sweep over frequency array, extracting specified quatities
+    at each step. Modal assurance criterion can be used to track modes through
+    frequency by modeshape similarity
+
+    Parameters
+    ----------
+    model : pywfe.Model
+        The model to perform the sweep with.
+    f_arr : np.ndarray float
+        frequency array.
+    quantities : list of str type
+        a list of strings specifying the quantities to be calculated.
+        These are:
+            - phi_plus: the (positive going) eigenvectors
+            - excited_amplitudes: see `pywfe.Model.excited_amplitudes`
+            - propagated_amplitudes: see `pywfe.Model.propagated_amplitudes`
+            - modal_displacements: see `pywfe.Model.modal_displacements`
+            - wavenumbers: see `pywfe.Model.wavenumbers`
+            - displacements: see `pywfe.Model.displacements`
+            - forces: see `pywfe.Model.forces`
+    x_r : float, np.ndarray, optional
+        response distance(s). The default is 0.
+    mac : bool, optional
+        Use the modal assurance criterion to sort waves. The default is False.
+    dofs : dofs, optional
+        The selected degrees of freedom. See `pywfe.Model.dofs_to_inds`.
+        The default is 'all'.
+
+    Returns
+    -------
+    output : dict
+        Dictionary of outputs for specified quantities.
+
+    """
 
     if dofs == "all":
         dofs = slice(0, model.N//2)
