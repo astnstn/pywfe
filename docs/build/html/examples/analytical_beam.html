@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Analytical Beam Example &#8212; pywfe  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="analytical-beam-example">
+<h1>Analytical Beam Example<a class="headerlink" href="#analytical-beam-example" title="Permalink to this heading">¶</a></h1>
+<p>In this example, we’ll go through the process of setting up a model of an <a class="reference external" href="https://en.wikipedia.org/wiki/Euler%E2%80%93Bernoulli_beam_theory">Euler-Bernoulli</a> beam using the <code class="docutils literal notranslate"><span class="pre">pywfe</span></code> package.</p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
+<img alt="descriptive text for accessibility" class="align-center" src="../_images/beam_element.png" />
+<p>An Euler-Bernoulli beam can be described with a finite element approximation giving the mass and stiffness matrices:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{M}=\frac{\rho A l}{420}\left[\begin{array}{cccc}
+156 &amp; 22 l &amp; 54 &amp; -13 l \\
+22 l &amp; 4 l^2 &amp; 13 l &amp; -3 l^2 \\
+54 &amp; 13 l &amp; 156 &amp; -22 l \\
+-13 l &amp; -3 l^2 &amp; -22 l &amp; 4 l^2
+\end{array}\right] \quad\mathbf{K}=\frac{E I}{l^3}\left[\begin{array}{cccc}
+12 &amp; 6 l &amp; -12 &amp; 6 l \\
+6 l &amp; 4 l^2 &amp; -6 l &amp; 2 l^2 \\
+-12 &amp; -6 l &amp; 12 &amp; -6 l \\
+6 l &amp; 2 l^2 &amp; -6 l &amp; 4 l^2
+\end{array}\right]\end{split}\]</div>
+<p>For a beam segment of length <span class="math notranslate nohighlight">\(l\)</span>, cross-sectional area <span class="math notranslate nohighlight">\(A\)</span> made from a material with Young’s modulus and density <span class="math notranslate nohighlight">\(E, \rho\)</span>, and second moment of area <span class="math notranslate nohighlight">\(I\)</span>.
+These matrices relate the displacement/rotation vector <span class="math notranslate nohighlight">\([w_1, \theta_1, w_2, \theta_2]^T\)</span> with the force/moment vector <span class="math notranslate nohighlight">\([F_1, M_1, f_2, F_2]^T\)</span> by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix}
+w_1\\
+\theta_1\\
+w_2\\
+\theta_2
+\end{bmatrix} \left(\mathbf{K} - \omega^2 \mathbf{M} \right) = \begin{bmatrix} F_1\\
+M_1\\
+F_2\\
+M_2
+\end{bmatrix}\end{split}\]</div>
+<p>The FE model only has two nodes with two degrees of freedom each. The analytical formulation of an infinite beam has well known solutions.
+The dispersion relation for transverse waves is</p>
+<div class="math notranslate nohighlight">
+\[k = \sqrt{ \frac{\omega}{a} }\]</div>
+<p>The transfer mobility is subject to a transverse point force at <span class="math notranslate nohighlight">\(x=0\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[v(x, \omega)=-\frac{\omega}{4 E I k^3}\left(i e^{-k x}-e^{-i k x}\right)\]</div>
+</section>
+<section id="creating-pywfe-model-of-beam">
+<h2>Creating pywfe Model of Beam<a class="headerlink" href="#creating-pywfe-model-of-beam" title="Permalink to this heading">¶</a></h2>
+<p>To begin with we define the system parameters</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pywfe</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plots</span>
+
+<span class="n">E</span> <span class="o">=</span> <span class="mf">2.1e11</span>  <span class="c1"># young mod</span>
+<span class="n">rho</span> <span class="o">=</span> <span class="mi">7850</span>  <span class="c1"># density</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># bean cross section side length length</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># beam cross sectional area</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">h</span><span class="o">**</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">12</span>  <span class="c1"># second moment of area</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">I</span><span class="o">/</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">A</span><span class="p">))</span>  <span class="c1"># factor in dispersion relation</span>
+</pre></div>
+</div>
+<p>and define the known solutions for the analytical dispersion relation and transfer mobility</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">euler_wavenumber</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="c1"># wavenumber of euler bernoulli beam</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f</span><span class="o">/</span><span class="n">a</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">transfer_velocity</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="c1"># transfer velocity for beam x &gt; 0</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">euler_wavenumber</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="n">omega</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">E</span><span class="o">*</span><span class="n">I</span><span class="o">*</span><span class="n">k</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>For the FE discretisation, the beam length must be significantly shorter than the minimum wavelength. We define maximum frequency and find the maximum wavenumber analytically to set the beam length for WFE modelling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f_max</span> <span class="o">=</span> <span class="mf">1e3</span>  <span class="c1"># maximum frequency</span>
+<span class="n">lambda_min</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">euler_wavenumber</span><span class="p">(</span><span class="n">f_max</span><span class="p">)</span>  <span class="c1"># mimimum wavelength</span>
+<span class="n">l_max</span> <span class="o">=</span> <span class="n">lambda_min</span> <span class="o">/</span> <span class="mi">10</span>  <span class="c1"># unit cell length max - 10 unit cells per wavelength</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">l_max</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># rounded unit cell length chosen</span>
+</pre></div>
+</div>
+<p>Now the mass and stiffness matrices can be defined</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># stiffness matrix</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">E</span><span class="o">*</span><span class="n">I</span><span class="o">/</span><span class="p">(</span><span class="n">l</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+
+    <span class="p">[</span><span class="mi">12</span><span class="p">,</span>    <span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">,</span>    <span class="o">-</span><span class="mi">12</span><span class="p">,</span>   <span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span>   <span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">,</span>    <span class="mi">12</span><span class="p">,</span>  <span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="p">])</span>
+
+<span class="c1"># mass matrix</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="n">A</span><span class="o">*</span><span class="n">l</span><span class="o">/</span><span class="mi">420</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+
+    <span class="p">[</span><span class="mi">156</span><span class="p">,</span>   <span class="mi">22</span><span class="o">*</span><span class="n">l</span><span class="p">,</span>      <span class="mi">54</span><span class="p">,</span>    <span class="o">-</span><span class="mi">13</span><span class="o">*</span><span class="n">l</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">22</span><span class="o">*</span><span class="n">l</span><span class="p">,</span>  <span class="mi">4</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>  <span class="mi">13</span><span class="o">*</span><span class="n">l</span><span class="p">,</span>  <span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">54</span><span class="p">,</span>    <span class="mi">13</span><span class="o">*</span><span class="n">l</span><span class="p">,</span>     <span class="mi">156</span><span class="p">,</span>    <span class="o">-</span><span class="mi">22</span><span class="o">*</span><span class="n">l</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">-</span><span class="mi">13</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>  <span class="o">-</span><span class="mi">22</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>These, along with the ‘mesh’ information are all that are needed to create the <cite>pywfe.Model</cite> object. The mesh information is given with a dictionary with three keys <cite>node</cite>, <cite>fieldvar</cite> and <cite>coord</cite>.
+These specify the node number, field variable, and coordinates in 1-3D of each degree of freedom in the model. The beam has 4 degrees of freedom, ordered as in the displacement vectors. Thus we define the <cite>dof</cite> dictionary</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dof</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="s1">&#39;fieldvar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;phi&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;coord&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">l</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>which describes the two nodes, the field quantities <cite>w</cite>, <cite>phi</cite> (repeated on each node), and the coordinates of each degree of freedom.
+The coordinates are given in <cite>x</cite> and <cite>y</cite> with two lists for demonstrative purposes. Only the first is required for this 1D model.</p>
+<p>The pywfe.Model object can now be created</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">beam_model</span> <span class="o">=</span> <span class="n">pywfe</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this point, you might want to check the model with <a class="reference internal" href="../model.html#pywfe.Model.see" title="pywfe.Model.see"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.Model.see()</span></code></a>, which creates an interactive matplotlib view of the nodes in the mesh.
+In this case however there is only one node to look at. The model can now be saved with <code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.save()</span></code>.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<section id="free-waves">
+<h3>Free Waves<a class="headerlink" href="#free-waves" title="Permalink to this heading">¶</a></h3>
+<p>Firstly let’s check the dispersion relation with the analytical solution</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#create frequency array</span>
+<span class="n">f_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">f_max</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># calculate the wfe wavenumbers</span>
+<span class="n">k_wfe</span> <span class="o">=</span> <span class="n">beam_model</span><span class="o">.</span><span class="n">dispersion_relation</span><span class="p">(</span><span class="n">f_arr</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">euler_wavenumber</span><span class="p">(</span><span class="n">f_arr</span><span class="p">),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">k_wfe</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;frequency (Hz)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;wavenumber (1/m)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="descriptive text for accessibility" class="align-center" src="../_images/beam_dispersion_relation.png" />
+</section>
+<section id="forcing">
+<h3>Forcing<a class="headerlink" href="#forcing" title="Permalink to this heading">¶</a></h3>
+<p>Forces can be added to degrees of freedom by changing elements of the <cite>Model.force</cite> array. We compare the mobility in the WFE model with the known solution</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">beam_model</span><span class="o">.</span><span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">x_r</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">beam_model</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">x_r</span><span class="o">=</span><span class="n">x_r</span><span class="p">,</span> <span class="n">dofs</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">derivative</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">transfer_velocity</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">x_r</span><span class="p">)),</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;WFE&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;frequency (Hz)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;abs(mobility) (m/(Ns)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <cite>transfer_function</cite> method calculates the response over all frequencies at the response distance <cite>x_r</cite>. The response distance can also be a list or array, in which case a higher dimensional array will be returned.
+The <cite>dofs</cite> keyword argument specifies for which degrees of freedom the output should be returned. In this case we want the same dof as the one we’re forcing. The <cite>derivative</cite> keyword argument applies n derivatives in the
+frequency domain, i.e a multiplication of the displacement by <span class="math notranslate nohighlight">\(i \omega\)</span>. So the output of the method call is the transverse velocity at x=0 for a transverse unit point force. This is the mobility of the beam and is compared
+with the analytical solution.</p>
+<img alt="descriptive text for accessibility" class="align-center" src="../_images/beam_transfer_mobility.png" />
+<p>See <a class="reference internal" href="../model.html#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.Model.transfer_function()</span></code></a> for more information</p>
+</section>
+<section id="more-functionality">
+<h3>More Functionality<a class="headerlink" href="#more-functionality" title="Permalink to this heading">¶</a></h3>
+<p>For more functionality see <a class="reference internal" href="../model.html#pywfe.Model" title="pywfe.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pywfe.Model</span></code></a></p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pywfe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pywfe.html">pyWFE Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model.html">pywfe.Model Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core.html">core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Analytical Beam Example</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Examples</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Examples</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Austen Stone.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/examples/analytical_beam.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

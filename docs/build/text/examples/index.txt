@@ -1,0 +1,13 @@
+Examples
+********
+
+Here you can find examples that demonstrate how to use the *pywfe*
+package.
+
+* Analytical Beam Example
+
+  * Introduction
+
+  * Creating pywfe Model of Beam
+
+  * Usage

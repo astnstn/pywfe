@@ -32,9 +32,4 @@ Methods
 
 .. autoclass:: pywfe.Model
    :members:
-   :exclude-members: __init__, is_same_frequency, reflection_matrices, set_boundary
-
-Examples
---------
-
-Provide examples of how to use the class, possibly with code snippets.
+   :exclude-members: __init__, is_same_frequency, reflection_matrices, set_boundary, 

@@ -1,4 +1,4 @@
-pyWFE Documentation
-===================
+pyWFE Package
+=============
 .. automodule:: pywfe
    :no-members:

@@ -1,0 +1,4 @@
+pyWFE Package
+*************
+
+pywfe. A Python implementation of the WFE method

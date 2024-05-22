@@ -68,42 +68,41 @@ class Model:
                  axis=0,
                  logging_level=20, solver="transfer_matrix"):
         """
-        initialise a Model object
+        Initialise a Model object.
 
         Parameters
         ----------
         K : np.ndarray
-            Stiffness matrix :math:`\mathbf{K}` shape :math:`(N, N)`.
+            Stiffness matrix :math:`\mathbf{K}` of shape :math:`(N, N)`.
         M : np.ndarray
-            Mass matrix :math:`\mathbf{M}` shape :math:`(N, N)`.
+            Mass matrix :math:`\mathbf{M}` of shape :math:`(N, N)`.
         dof : dict
             A dictionary containing the following keys:
 
-            - ``'coord'`` : array of shape :math:`(n_{\\text{{dim}}}, N)`
-                Coordinates of the degrees of freedom, where :math:`n_{\\text{{dim}}}` is the number of spatial dimensions and :math:`N` is the total number of degrees of freedom in the initial total mesh.
-            - ``'node'`` : array of shape :math:`(N,)`
-                Node number that the degree of freedom sits on.
-            - ``'fieldvar'`` : array of shape :math:`(N,)`
-                Field variable for the degree of freedom (e.g., pressure, displacement in x, displacement in y).
-            - ``'index'`` : array of shape :math:`(N,)`
-                Index of the degree of freedom, used to keep track of the degrees of freedom when sorted.
+            - 'coord' : array-like, shape :math:`(n_{dim}, N)`
+              Coordinates of the degrees of freedom, where :math:`n_{dim}` is the number of spatial dimensions and :math:`N` is the total number of degrees of freedom in the initial total mesh.
+            - 'node' : array-like, shape :math:`(N,)`
+              Node number that the degree of freedom sits on.
+            - 'fieldvar' : array-like, shape :math:`(N,)`
+              Field variable for the degree of freedom (e.g., pressure, displacement in x, displacement in y).
+            - 'index' : array-like, shape :math:`(N,)`
+              Index of the degree of freedom, used to keep track of the degrees of freedom when sorted.
 
         null : ndarray, optional
-            Null space constraint matrix (for boundary conditions) shape :math:`(N, N)`. The default is None.
+            Null space constraint matrix (for boundary conditions) of shape :math:`(N, N)`. The default is None.
         nullf : ndarray, optional
-            Force null space constraint matrix (for boundary conditions) shape :math:`(N, N)`. The default is None.
+            Force null space constraint matrix (for boundary conditions) of shape :math:`(N, N)`. The default is None.
         axis : int, optional
-            The waveguide axis. Moves ``dof['coord'][axis]`` to ``dof['coord'][0]``. The default is 0.
+            The waveguide axis. Moves `dof['coord'][axis]` to `dof['coord'][0]`. The default is 0.
         logging_level : int, optional
-            logging level. The default is 20.
+            Logging level. The default is 20.
         solver : str, optional
             The form of the eigenvalue to use. The default is "transfer_matrix".
-            Options are currently ``'transfer_matrix'`` or ``'polynomial'``.
+            Options are currently 'transfer_matrix' or 'polynomial'.
 
         Returns
         -------
         None.
-
         """
         self.description = None
 
@@ -190,7 +189,7 @@ class Model:
 
     def dofs_to_indices(self, dofs):
         """
-
+        Generates indices for selected dofs
 
         Parameters
         ----------
@@ -706,7 +705,7 @@ class Model:
 
         return np.squeeze(np.array(displacements))
 
-    def select_dofs(self, fieldvar=None):
+    def select_dofs(self, fieldvar=None, where=None):
         """
         select the model degrees of freedom that correspond to specified 
         field variable.
@@ -724,6 +723,12 @@ class Model:
         """
         dofs = self.left_dofs()
 
+        if where is not None:
+            dofs['coord'] = dofs['coord'][:, where]
+
+            for key in ['face', 'fieldvar', 'index', 'node']:
+                dofs[key] = dofs[key][where]
+
         if fieldvar is not None:
 
             selected_dofs = np.isin(dofs['fieldvar'], fieldvar)
@@ -736,6 +741,15 @@ class Model:
         return dofs
 
     def left_dofs(self):
+        """
+        get the dofs on the left face of the segment
+
+        Returns
+        -------
+        dofs : dict
+            dof dictionary.
+
+        """
 
         dofs = self.dof.copy()
 

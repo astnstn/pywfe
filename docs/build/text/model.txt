@@ -1,0 +1,552 @@
+pywfe.Model Class
+*****************
+
+
+Introduction
+============
+
+Brief description of the class and its purpose.
+
+
+Constructor
+===========
+
+Model.__init__(K, M, dof, null=None, nullf=None, axis=0, logging_level=20, solver='transfer_matrix')
+
+   Initialise a Model object.
+
+   Parameters:
+      **K** : np.ndarray
+         Stiffness matrix \mathbf{K} of shape (N, N).
+
+      **M** : np.ndarray
+         Mass matrix \mathbf{M} of shape (N, N).
+
+      **dof** : dict
+         A dictionary containing the following keys:
+
+         * ‘coord’ : array-like, shape (n_{dim}, N) Coordinates of the
+           degrees of freedom, where n_{dim} is the number of spatial
+           dimensions and N is the total number of degrees of freedom
+           in the initial total mesh.
+
+         * ‘node’ : array-like, shape (N,) Node number that the degree
+           of freedom sits on.
+
+         * ‘fieldvar’ : array-like, shape (N,) Field variable for the
+           degree of freedom (e.g., pressure, displacement in x,
+           displacement in y).
+
+         * ‘index’ : array-like, shape (N,) Index of the degree of
+           freedom, used to keep track of the degrees of freedom when
+           sorted.
+
+      **null** : ndarray, optional
+         Null space constraint matrix (for boundary conditions) of
+         shape (N, N). The default is None.
+
+      **nullf** : ndarray, optional
+         Force null space constraint matrix (for boundary conditions)
+         of shape (N, N). The default is None.
+
+      **axis** : int, optional
+         The waveguide axis. Moves *dof[‘coord’][axis]* to
+         *dof[‘coord’][0]*. The default is 0.
+
+      **logging_level** : int, optional
+         Logging level. The default is 20.
+
+      **solver** : str, optional
+         The form of the eigenvalue to use. The default is
+         “transfer_matrix”. Options are currently ‘transfer_matrix’ or
+         ‘polynomial’.
+
+   Returns:
+      None.
+
+Attributes
+==========
+
+Model.K
+
+   Sorted stiffness matrix
+
+Model.M
+
+   Sorted mass matrix
+
+Model.dof
+
+   Sorted dof dictionary
+
+Model.node
+
+   dictionary of node information
+
+Model.K_sub
+
+   dictionary containing substructured stiffness matrices "'LL', 'LR,
+   'RL', 'RR', 'LI', 'IL', 'RI', 'IR', 'II'"
+
+Model.M_sub
+
+   dictionary containing substructured mass matrices.
+
+Model.eigensolution
+
+   The eigensolution at a given frequency. Gives values and vectors
+   corresponding to propagation constants and mode shapes
+
+Model.force
+
+   The force vector corresponding to forces at each dof
+
+
+Methods
+=======
+
+class pywfe.Model(K, M, dof, null=None, nullf=None, axis=0, logging_level=20, solver='transfer_matrix')
+
+   The main high level api in the pywfe package.
+
+   -[ Methods ]-
+
+   +------------+--------------------------------------------------------------------------------------------+
+   | "dispersi  | Calculate frequency-wavenumber relation                                                    |
+   | on_relati  |                                                                                            |
+   | on"(frequ  |                                                                                            |
+   | ency_arra  |                                                                                            |
+   | y[, ...])  |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "displace  | gets the displacements for all degrees of freedom at specified x and f.                    |
+   | ments"(x_  |                                                                                            |
+   | r[, f,     |                                                                                            |
+   | dofs])     |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "dofs_to_  | Generates indices for selected dofs                                                        |
+   | indices"(  |                                                                                            |
+   | dofs)      |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "excited_  | Find the excited amplitudes subject to a given force and frequency.                        |
+   | amplitude  |                                                                                            |
+   | s"([f])    |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "forces"(  | Gets the total force on each degree of freedom.                                            |
+   | x_r[, f,   |                                                                                            |
+   | dofs])     |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "form_dsm  | Forms the DSM of the model at a given frequency                                            |
+   | "(f)       |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "frequenc  | Solves various quantities over specified frequency and response range.                     |
+   | y_sweep"(  |                                                                                            |
+   | f_arr[,    |                                                                                            |
+   | x_r, quan  |                                                                                            |
+   | tities,    |                                                                                            |
+   | ...])      |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "generate  | Generates the sorted eigensolution at a given frequency.                                   |
+   | _eigensol  |                                                                                            |
+   | ution"(f)  |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "left_dof  | get the dofs on the left face of the segment                                               |
+   | s"()       |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "modal_di  | Calculate the modal displacements at a given distance and frequency.                       |
+   | splacemen  |                                                                                            |
+   | ts"(x_r[,  |                                                                                            |
+   | f, dofs])  |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "modal_fo  | Generates the modal forces at given distance and frequency                                 |
+   | rces"(x_r  |                                                                                            |
+   | [, f,      |                                                                                            |
+   | dofs])     |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "phase_ve  | gets the phase velocity curves for a given frequency array                                 |
+   | locity"(f  |                                                                                            |
+   | requency_  |                                                                                            |
+   | array[,    |                                                                                            |
+   | direction, |                                                                                            |
+   | ...])      |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "propagat  | Calculate the propagated and superimposed amplitudes for a given distance and frequency.   |
+   | ed_amplit  |                                                                                            |
+   | udes"(x_r  |                                                                                            |
+   | [, f])     |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "save"(fo  | Save the model to a folder                                                                 |
+   | lder[,     |                                                                                            |
+   | source])   |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "see"()    | Creates interactive matplotlib widget to visualise mesh and inspect degrees of freedom.    |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "select_d  | select the model degrees of freedom that correspond to specified field variable.           |
+   | ofs"([fie  |                                                                                            |
+   | ldvar])    |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "selectio  | Get the dof indices for a given selection.                                                 |
+   | n_index"(  |                                                                                            |
+   | dof)       |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "transfer  | Gets the displacement over frequency at specified distance and dofs.                       |
+   | _function  |                                                                                            |
+   | "(f_arr,   |                                                                                            |
+   | x_r[,      |                                                                                            |
+   | dofs, der  |                                                                                            |
+   | ivative])  |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+   | "wavenumb  | Calculates the wavenumbers of the system at a given frequency                              |
+   | ers"([f,   |                                                                                            |
+   | direction, |                                                                                            |
+   | imag_thre  |                                                                                            |
+   | shold])    |                                                                                            |
+   +------------+--------------------------------------------------------------------------------------------+
+
+   solver
+
+      Description of solver.
+
+   K
+
+      Sorted stiffness matrix
+
+   M
+
+      Sorted mass matrix
+
+   dof
+
+      Sorted dof dictionary
+
+   K_sub
+
+      dictionary containing substructured stiffness matrices "'LL',
+      'LR, 'RL', 'RR', 'LI', 'IL', 'RI', 'IR', 'II'"
+
+   M_sub
+
+      dictionary containing substructured mass matrices.
+
+   node
+
+      dictionary of node information
+
+   delta
+
+      Waveguide segment length
+
+   N
+
+      Number of dofs on both left and right faces combined
+
+   eigensolution
+
+      The eigensolution at a given frequency. Gives values and vectors
+      corresponding to propagation constants and mode shapes
+
+   force
+
+      The force vector corresponding to forces at each dof
+
+   dofs_to_indices(dofs)
+
+      Generates indices for selected dofs
+
+      Parameters:
+         **dofs** : str or list or dict
+            ‘all’ specifies all dofs. A list of integers is
+            interpreted as the dof indices. A dof dictionary, created
+            with *model.select_dofs()*
+
+      Returns:
+         **inds** : np.ndarray
+            array of dof indices.
+
+   form_dsm(f)
+
+      Forms the DSM of the model at a given frequency
+
+      Parameters:
+         **f** : float
+            frequency at which to form the DSM.
+
+      Returns:
+         **DSM** : ndarray
+            (ndof, ndof) sized array of type complex. The condensed
+            DSM.
+
+   generate_eigensolution(f)
+
+      Generates the sorted eigensolution at a given frequency. If
+      frequency is None or the presently calculated frequency, then
+      reuse the previously calculated eigensolution.
+
+      Parameters:
+         **f** : float
+            The frequency at which to calculate the eigensolution.
+
+      Returns:
+         **eigensolution** : Eigensolution (namedtuple)
+            The sorted eigensolution. The named tuple fields are:
+               * lambda_[plus]/[minus] : +/- going eigenvalues
+
+               * phi_[plus]/[minus] : +/- going right eigenvectors
+
+               * psi_[plus]/[minus] : +/- going left eigenvectors
+
+   wavenumbers(f=None, direction='plus', imag_threshold=None)
+
+      Calculates the wavenumbers of the system at a given frequency
+
+      Parameters:
+         **f** : float, optional
+            Frequency at which to calculated wavenumbers. The default
+            is None.
+
+         **direction** : str, optional
+            Choose positive going or negative going waves. The default
+            is “plus”.
+
+         **imag_threshold** : float, optional
+            Imaginary part of wavenumber above which will be set to
+            np.nan. The default is None.
+
+      Returns:
+         **k** : ndarray
+            The array of wavenumbers at this frequency.
+
+   dispersion_relation(frequency_array, direction='plus', imag_threshold=None)
+
+      Calculate frequency-wavenumber relation
+
+      Parameters:
+         **frequency_array** : ndarray
+            Frequencies to calculate.
+
+         **direction** : str, optional
+            Choose positive going or negative going waves. The default
+            is “plus”.
+
+         **imag_threshold** : float, optional
+            Imaginary part of wavenumber above which will be set to
+            np.nan. The default is None.
+
+      Returns:
+         **wavenumbers** : ndarray
+            (nfreq, n_waves) sized array of type complex.
+
+   phase_velocity(frequency_array, direction='plus', imag_threshold=None)
+
+      gets the phase velocity curves for a given frequency array
+
+      Parameters:
+         **frequency_array** : np.ndarray
+            DESCRIPTION.
+
+         **direction** : str, optional
+            Direction of the waves. The default is ‘plus’.
+
+         **imag_threshold** : float, optional
+            Imaginary threshold above which set to np.nan. The default
+            is None.
+
+      Returns:
+         ndarray
+            phase velocity.
+
+   excited_amplitudes(f=None)
+
+      Find the excited amplitudes subject to a given force and
+      frequency. If the solution has already been calculated for the
+      same inputs, reuse the old solution.
+
+      Parameters:
+         **f** : float, optional
+            Frequency. The default is None.
+
+      Returns:
+         **e_plus** : ndarray
+            Positive excited wave amplitudes.
+
+         **e_minus** : ndarray
+            Negative excited wave amplitudes.
+
+   propagated_amplitudes(x_r, f=None)
+
+      Calculate the propagated and superimposed amplitudes for a given
+      distance and frequency.
+
+      Parameters:
+         **x_r** : float
+            Axial response distance.
+
+         **f** : float, optional
+            Frequency. The default is None.
+
+      Returns:
+         **b_plus, b_minus** : ndarray
+            Positive and negative amplitudes.
+
+   modal_displacements(x_r, f=None, dofs='all')
+
+      Calculate the modal displacements at a given distance and
+      frequency. Each column corresponds to a different wavemode, each
+      row is a different degree of freedom.
+
+      Parameters:
+         **x_r** : float
+            Axial response distance.
+
+         **f** : float, optional
+            Frequency. The default is None.
+
+      Returns:
+         **q_j_plus, q_j_minus** : ndarray
+            The modal displacements for positive and negative going
+            waves.
+
+   displacements(x_r, f=None, dofs='all')
+
+      gets the displacements for all degrees of freedom at specified x
+      and f.
+
+      Parameters:
+         **x_r** : float
+            response distance (can be array like).
+
+         **f** : float, optional
+            Frequency. The default is None.
+
+      Returns:
+         ndarray
+            displacements for each degree of freedom.
+
+   modal_forces(x_r, f=None, dofs='all')
+
+      Generates the modal forces at given distance and frequency
+
+      Parameters:
+         **x_r** : float
+            Response distance.
+
+         **f** : float, optional
+            Frequency. The default is None.
+
+      Returns:
+         np.ndarray
+            modal force array.
+
+   forces(x_r, f=None, dofs='all')
+
+      Gets the total force on each degree of freedom.
+
+      Parameters:
+         **x_r** : float
+            Response distance.
+
+         **f** : float, optional
+            Frequency. The default is None.
+
+      Returns:
+         np.ndarray
+            forces.
+
+   frequency_sweep(f_arr, x_r=0, quantities=['displacements'], mac=False, dofs='all')
+
+      Solves various quantities over specified frequency and response
+      range. Includes Modal Assurance Critereon (MAC) sorting.
+
+      Parameters:
+         **f_arr** : np.ndarray
+            Array of frequencies.
+
+         **x_r** : float or np.ndarray, optional
+            Response distance. The default is 0.
+
+         **quantities** : list, optional
+            Quantities to solve for. The default is [‘displacements’].
+
+         **mac** : bool, optional
+            Whether to sort modal quantities according to MAC. The
+            default is False.
+
+         **dofs** : list, optional
+            Select specific degrees of freedom. The default is ‘all’.
+
+      Returns:
+         dict
+            Dictionary of output for specified quantities.
+
+   transfer_function(f_arr, x_r, dofs='all', derivative=0)
+
+      Gets the displacement over frequency at specified distance and
+      dofs.
+
+      Parameters:
+         **f_arr** : np.ndarray
+            Frequency array.
+
+         **x_r** : float or np.ndarray
+            Response distance.
+
+         **dofs** : list, optional
+            List of dofs to return. The default is “all”.
+
+      Returns:
+         ndarray
+            Displacements over frequency and distance.
+
+   select_dofs(fieldvar=None)
+
+      select the model degrees of freedom that correspond to specified
+      field variable.
+
+      Parameters:
+         **fieldvar** : str or list, optional
+            The fieldvariable or list thereof to select for. The
+            default is None.
+
+      Returns:
+         **dofs** : dict
+            Reduced dof dictionary.
+
+   left_dofs()
+
+      get the dofs on the left face of the segment
+
+      Returns:
+         **dofs** : dict
+            dof dictionary.
+
+   selection_index(dof)
+
+      Get the dof indices for a given selection.
+
+      Parameters:
+         **dof** : dict
+            dof dictionary.
+
+      Returns:
+         np.ndarray
+            1D array of indices for selected dofs.
+
+   see()
+
+      Creates interactive matplotlib widget to visualise mesh and
+      inspect degrees of freedom.
+
+      Returns:
+         None.
+   save(folder, source='local')
+
+      Save the model to a folder
+
+      Parameters:
+         **folder** : str
+            folder name.
+
+         **source** : str, optional
+            Save to "'local'" or "'database'". The default is ‘local’.
+
+      Returns:
+         None.

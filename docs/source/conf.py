@@ -57,3 +57,13 @@ html_static_path = ['_static']
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+
+# --- OPTIONS FOR LATEX
+
+fh = open('latex_preamble.tex', 'r+')
+PREAMBLE = fh.read()
+fh.close()
+latex_elements = {
+# Additional stuff for the LaTeX preamble.
+'preamble': PREAMBLE,
+}

@@ -10,6 +10,8 @@ from pywfe.utils.vtk_tools import sort_to_vtk, save_as_vtk
 from pywfe.utils.shaker import Shaker
 from pywfe.utils.logging_config import log
 from pywfe.utils.trf_interpolator import interpolate
+from pywfe.utils.pipe_fluid_structure_energy_distribution import calculate_power_distribution
+
 log()
 
 import os

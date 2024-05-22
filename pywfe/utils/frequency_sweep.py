@@ -26,13 +26,13 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False, dofs='all'):
     quantities : list of str type
         a list of strings specifying the quantities to be calculated.
         These are:
-            - phi_plus: the (positive going) eigenvectors
-            - excited_amplitudes: see `pywfe.Model.excited_amplitudes`
-            - propagated_amplitudes: see `pywfe.Model.propagated_amplitudes`
-            - modal_displacements: see `pywfe.Model.modal_displacements`
-            - wavenumbers: see `pywfe.Model.wavenumbers`
-            - displacements: see `pywfe.Model.displacements`
-            - forces: see `pywfe.Model.forces`
+        - phi_plus: the (positive going) eigenvectors
+        - excited_amplitudes: see `pywfe.Model.excited_amplitudes`
+        - propagated_amplitudes: see `pywfe.Model.propagated_amplitudes`
+        - modal_displacements: see `pywfe.Model.modal_displacements`
+        - wavenumbers: see `pywfe.Model.wavenumbers`
+        - displacements: see `pywfe.Model.displacements`
+        - forces: see `pywfe.Model.forces`
     x_r : float, np.ndarray, optional
         response distance(s). The default is 0.
     mac : bool, optional
@@ -74,7 +74,6 @@ def frequency_sweep(model, f_arr, quantities, x_r=0, mac=False, dofs='all'):
             inds = sorting_indices(phi_previous, phi_next)
             # cache the sorted current (to be previous) frequency
             phi_previous = phi_next[:, inds]
-
         for quantity in quantities:
 
             if quantity == "phi_plus":

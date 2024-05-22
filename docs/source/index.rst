@@ -14,8 +14,6 @@ pywfe - a python package for the wave finite element method
    :width: 1000px
    :align: center
 
-Purpose
-+++++++
 This package implements the Wave Finite Element Method (WFEM) in Python to analyse guided waves in 1 dimension. Initially Written to analyse mechanical waves in fluid filled pipes meshed in COMSOL.
 
 **Currently only works for infinite waveguides.**
@@ -30,7 +28,8 @@ The `pywfe.Model` class provides a high level api to calculate the free and forc
    model
    core
    utils
-   
+   examples/index
+
 
 
 Indices and tables

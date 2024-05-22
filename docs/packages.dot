@@ -1,0 +1,50 @@
+digraph "packages" {
+rankdir=BT
+charset="utf-8"
+"pywfe" [color="black", label=<pywfe>, shape="box", style="solid"];
+"pywfe.core" [color="black", label=<pywfe.core>, shape="box", style="solid"];
+"pywfe.core.boundary_conditions" [color="black", label=<pywfe.core.boundary_conditions>, shape="box", style="solid"];
+"pywfe.core.classify_modes" [color="black", label=<pywfe.core.classify_modes>, shape="box", style="solid"];
+"pywfe.core.eigensolvers" [color="black", label=<pywfe.core.eigensolvers>, shape="box", style="solid"];
+"pywfe.core.forced_problem" [color="black", label=<pywfe.core.forced_problem>, shape="box", style="solid"];
+"pywfe.core.model_setup" [color="black", label=<pywfe.core.model_setup>, shape="box", style="solid"];
+"pywfe.model" [color="black", label=<pywfe.model>, shape="box", style="solid"];
+"pywfe.types" [color="black", label=<pywfe.types>, shape="box", style="solid"];
+"pywfe.utils" [color="black", label=<pywfe.utils>, shape="box", style="solid"];
+"pywfe.utils.comsol_loader" [color="black", label=<pywfe.utils.comsol_loader>, shape="box", style="solid"];
+"pywfe.utils.forcer" [color="black", label=<pywfe.utils.forcer>, shape="box", style="solid"];
+"pywfe.utils.frequency_sweep" [color="black", label=<pywfe.utils.frequency_sweep>, shape="box", style="solid"];
+"pywfe.utils.io_utils" [color="black", label=<pywfe.utils.io_utils>, shape="box", style="solid"];
+"pywfe.utils.logging_config" [color="black", label=<pywfe.utils.logging_config>, shape="box", style="solid"];
+"pywfe.utils.modal_assurance" [color="black", label=<pywfe.utils.modal_assurance>, shape="box", style="solid"];
+"pywfe.utils.shaker" [color="black", label=<pywfe.utils.shaker>, shape="box", style="solid"];
+"pywfe.utils.trf_interpolator" [color="black", label=<pywfe.utils.trf_interpolator>, shape="box", style="solid"];
+"pywfe.utils.vtk_tools" [color="black", label=<pywfe.utils.vtk_tools>, shape="box", style="solid"];
+"pywfe" -> "pywfe.core.eigensolvers" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.model" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.comsol_loader" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.forcer" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.io_utils" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.logging_config" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.modal_assurance" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.shaker" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.trf_interpolator" [arrowhead="open", arrowtail="none"];
+"pywfe" -> "pywfe.utils.vtk_tools" [arrowhead="open", arrowtail="none"];
+"pywfe.core.classify_modes" -> "pywfe.types" [arrowhead="open", arrowtail="none"];
+"pywfe.core.forced_problem" -> "pywfe.types" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.core" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.core.boundary_conditions" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.core.classify_modes" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.core.eigensolvers" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.core.forced_problem" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.core.model_setup" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.types" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.utils.forcer" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.utils.frequency_sweep" [arrowhead="open", arrowtail="none"];
+"pywfe.model" -> "pywfe.utils.io_utils" [arrowhead="open", arrowtail="none"];
+"pywfe.utils.comsol_loader" -> "pywfe" [arrowhead="open", arrowtail="none"];
+"pywfe.utils.frequency_sweep" -> "pywfe.utils.modal_assurance" [arrowhead="open", arrowtail="none"];
+"pywfe.utils.io_utils" -> "pywfe" [arrowhead="open", arrowtail="none"];
+"pywfe.utils.vtk_tools" -> "pywfe.core" [arrowhead="open", arrowtail="none"];
+"pywfe.utils.vtk_tools" -> "pywfe.core.model_setup" [arrowhead="open", arrowtail="none"];
+}
