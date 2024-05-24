@@ -1,3 +1,16 @@
+# .readthedocs.yaml
+
 version: 2
+
+# Specify the build image (which determines the OS)
+build:
+  image: "latest"  # This uses the latest Read the Docs build image
+
+# Define the version of Python to use
+python:
+  version: "3.8"
+
+
+# Sphinx configuration file location
 sphinx:
   configuration: docs/source/conf.py
