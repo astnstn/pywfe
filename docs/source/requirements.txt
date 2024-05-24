@@ -1,3 +1,9 @@
 sphinx
 sphinx-rtd-theme
 numpydoc
+matplotlib
+numpy
+pyevtk
+scipy
+setuptools
+tqdm
