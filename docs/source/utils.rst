@@ -3,7 +3,7 @@ utils
 
 .. contents::
    :local:
-   :depth: 2
+   :depth: 1
 
 .. automodule:: pywfe.utils.io_utils
    :members:
