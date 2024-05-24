@@ -1,16 +1,16 @@
 # pyWFE
 
-##### Python implementation of the Wave Finite Element (WFE) method.
+#### Python implementation of the Wave Finite Element (WFE) method.
 
 ---
 
+**[THIS REPO IS STILL A WORK IN PROGRESS]**
+
+
+
 The WFE method predicts wave propagation in waveguides of any length by meshing a small segment of the waveguide in conventional FE and applying periodic boundary conditions. 
 
-
-
 This Python package applies the WFE method to given mesh data and uses a single class which provides the functionality to:
-
-
 
 - Sort system matrices and condense internal degrees of freedom.
 
@@ -22,8 +22,23 @@ This Python package applies the WFE method to given mesh data and uses a single 
 
 
 
-![Demo](imgs/animation.gif)
+And other helpful features. 
 
-**[THIS REPO IS STILL A WORK IN PROGRESS]**
+
+
+
+The package was developed to study mechanical waves in fluid-filled pipes. 
+
+---
 
 [Find the documentation HERE](https://pywfe.readthedocs.io/en/latest/)
+
+---
+
+
+
+*![Demo](imgs/animation.gif)*
+
+*forced response of water pipe calculated and exported into `.vtu` format with `pywfe` package*  
+
+---
