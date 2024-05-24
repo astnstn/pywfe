@@ -4,8 +4,6 @@
 
 ---
 
-**[THIS REPO IS STILL A WORK IN PROGRESS]**
-
 
 
 The WFE method predicts wave propagation in waveguides of any length by meshing a small segment of the waveguide in conventional FE and applying periodic boundary conditions. 
