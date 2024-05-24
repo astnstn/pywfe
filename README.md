@@ -6,6 +6,4 @@
 
 **[THIS REPO IS STILL A WORK IN PROGRESS]**
 
-
-
-[Find the documentation HERE](pywfe.readthedocs.io/en/latest/index.html)
+[Find the documentation HERE](https://pywfe.readthedocs.io/en/latest/)
