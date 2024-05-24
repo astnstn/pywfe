@@ -176,7 +176,7 @@ Firstly let's check the dispersion relation with the analytical solution
     plt.xlabel("frequency (Hz)")
     plt.ylabel("wavenumber (1/m)")
 
-.. image:: beam_dispersion_relation.png
+.. image:: beam_dispersion_relation.PNG
    :alt: descriptive text for accessibility
    :align: center    
 
@@ -206,7 +206,7 @@ The `dofs` keyword argument specifies for which degrees of freedom the output sh
 frequency domain, i.e a multiplication of the displacement by :math:`i \omega`. So the output of the method call is the transverse velocity at x=0 for a transverse unit point force. This is the mobility of the beam and is compared 
 with the analytical solution. 
 
-.. image:: beam_transfer_mobility.png
+.. image:: beam_transfer_mobility.PNG
    :alt: descriptive text for accessibility
    :align: center  
 
