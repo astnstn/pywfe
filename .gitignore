@@ -1,2 +1,6 @@
 
-pywfe/database/
+# Ignore all files in the database folder
+pywfe/database/*
+
+# Do not ignore the .gitkeep file
+!pywfe/database/.gitkeep
