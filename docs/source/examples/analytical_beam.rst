@@ -6,8 +6,7 @@ In this example, we'll go through the process of setting up a model of an `Euler
 Introduction
 ------------
 
-.. image:: beam_element.PNG
-   :alt: descriptive text for accessibility
+.. image:: beam_element.jpg
    :align: center
 
 An Euler-Bernoulli beam can be described with a finite element approximation giving the mass and stiffness matrices:
@@ -177,7 +176,6 @@ Firstly let's check the dispersion relation with the analytical solution
     plt.ylabel("wavenumber (1/m)")
 
 .. image:: beam_dispersion_relation.PNG
-   :alt: descriptive text for accessibility
    :align: center    
 
 Forcing
@@ -207,7 +205,6 @@ frequency domain, i.e a multiplication of the displacement by :math:`i \omega`. 
 with the analytical solution. 
 
 .. image:: beam_transfer_mobility.PNG
-   :alt: descriptive text for accessibility
    :align: center  
 
 See :func:`pywfe.Model.transfer_function` for more information
