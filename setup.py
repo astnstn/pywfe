@@ -4,22 +4,20 @@ setup(
     name='pywfe',
     version='0.1.0',    # Update this for new versions
     description='Python implementation of Wave Finite Element method',
-    url='https://github.com/yourusername/pywfe',  # Update this
-    author='Your Name',  # Update this
-    author_email='your.email@example.com',  # Update this
+    url='https://github.com/yourusername/pywfe',
+    author='Austen Stone',  # Update this
+    author_email='austenkentellstone@gmail.com',
     license='MIT',  # Or another license
     packages=find_packages(),
     install_requires=[
-        # List your package dependencies here
-        # For example: 'numpy', 'scipy', etc.
+        matplotlib,
+	numpy,
+	pyevtk,
+	scipy,
+	tqdm
     ],
     classifiers=[
         # Classifiers help users find your project by categorizing it.
-
-        # For a list of valid classifiers, see https://pypi.org/classifiers/
-
-        # For example:
-        'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
