@@ -47,6 +47,21 @@
 <span class="target" id="module-pywfe.utils.io_utils"></span><section id="io-utils">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">io_utils</a><a class="headerlink" href="#io-utils" title="Permalink to this heading">¶</a></h2>
 <p>This module contains the functionality needed to save and load pywfe.Model objects</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.utils.io_utils.load">
+<span class="sig-prename descclassname"><span class="pre">pywfe.utils.io_utils.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.io_utils.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.utils.io_utils.save">
+<span class="sig-prename descclassname"><span class="pre">pywfe.utils.io_utils.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.io_utils.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.utils.io_utils.database">
+<span class="sig-prename descclassname"><span class="pre">pywfe.utils.io_utils.</span></span><span class="sig-name descname"><span class="pre">database</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.io_utils.database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <span class="target" id="module-pywfe.utils.comsol_loader"></span><section id="comsol-loader">
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">comsol_loader</a><a class="headerlink" href="#comsol-loader" title="Permalink to this heading">¶</a></h2>
@@ -152,9 +167,75 @@ The default is ‘all’.</p>
 <dd><p>Compute the Modal Assurance Criterion (MAC) matrix.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.utils.modal_assurance.sorting_indices">
+<span class="sig-prename descclassname"><span class="pre">pywfe.utils.modal_assurance.</span></span><span class="sig-name descname"><span class="pre">sorting_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modes_prev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes_next</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.modal_assurance.sorting_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pywfe.utils.modal_assurance.sort_wavenumbers">
+<span class="sig-prename descclassname"><span class="pre">pywfe.utils.modal_assurance.</span></span><span class="sig-name descname"><span class="pre">sort_wavenumbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavenumbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imag_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.modal_assurance.sort_wavenumbers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <span class="target" id="module-pywfe.utils.shaker"></span><p>Created on Tue Aug 22 11:24:28 2023</p>
 <p>&#64;author: Austen</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywfe.utils.shaker.</span></span><span class="sig-name descname"><span class="pre">Shaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42992</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.21</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.000298</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>accelerance</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>force</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>newtons_per_amp</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>newtons_per_volt</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>volts_per_amp</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42992</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.21</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.000298</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker.newtons_per_amp">
+<span class="sig-name descname"><span class="pre">newtons_per_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker.newtons_per_amp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker.volts_per_amp">
+<span class="sig-name descname"><span class="pre">volts_per_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker.volts_per_amp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker.newtons_per_volt">
+<span class="sig-name descname"><span class="pre">newtons_per_volt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker.newtons_per_volt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker.accelerance">
+<span class="sig-name descname"><span class="pre">accelerance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker.accelerance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywfe.utils.shaker.Shaker.force">
+<span class="sig-name descname"><span class="pre">force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.shaker.Shaker.force" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

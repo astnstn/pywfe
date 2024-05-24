@@ -16,8 +16,3 @@ utils
 
 .. automodule:: pywfe.utils.modal_assurance
    :members:
-
-.. automodule:: pywfe.utils.shaker
-   :members:
-
-
