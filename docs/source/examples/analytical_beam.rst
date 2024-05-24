@@ -6,7 +6,7 @@ In this example, we'll go through the process of setting up a model of an `Euler
 Introduction
 ------------
 
-.. image:: beam_element.png
+.. image:: beam_element.PNG
    :alt: descriptive text for accessibility
    :align: center
 
