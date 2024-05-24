@@ -4,4 +4,8 @@
 
 ---
 
-**[IN PROGRESS]**
+**[THIS REPO IS STILL A WORK IN PROGRESS]**
+
+
+
+[Find the documentation HERE](pywfe.readthedocs.io/en/latest/index.html)
