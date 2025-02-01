@@ -657,8 +657,17 @@ class Model:
             Array of frequencies.
         x_r : float or np.ndarray, optional
             Response distance. The default is 0.
-        quantities : list, optional
-            Quantities to solve for. The default is ['displacements'].
+        quantities : list of str
+            A list of strings specifying the quantities to be calculated.
+            These are:
+
+            - `phi_plus`: the (positive going) eigenvectors.
+            - `excited_amplitudes`: see `pywfe.Model.excited_amplitudes`.
+            - `propagated_amplitudes`: see `pywfe.Model.propagated_amplitudes`.
+            - `modal_displacements`: see `pywfe.Model.modal_displacements`.
+            - `wavenumbers`: see `pywfe.Model.wavenumbers`.
+            - `displacements`: see `pywfe.Model.displacements`.
+            - `forces`: see `pywfe.Model.forces`.
         mac : bool, optional
             Whether to sort modal quantities according to MAC. The default is False.
         dofs : list, optional
@@ -707,13 +716,18 @@ class Model:
 
     def select_dofs(self, fieldvar=None, where=None):
         """
-        select the model degrees of freedom that correspond to specified 
+        Select the model degrees of freedom that correspond to specified 
         field variable.
 
         Parameters
         ----------
         fieldvar : str or list, optional
             The fieldvariable or list thereof to select for. The default is None.
+        where : np.ndarray of type bool, optional
+            Optional argument to select specific nodes, same length as coords.
+            For example, selecting specific region by [coordinate array] > value.
+            The default is None.
+
 
         Returns
         -------
@@ -721,9 +735,14 @@ class Model:
             Reduced dof dictionary.
 
         """
+
         dofs = self.left_dofs()
 
         if where is not None:
+
+            if len(where) == len(self.dof['coord'][0]):
+                where = where[:len(dofs['coord'][0])]
+
             dofs['coord'] = dofs['coord'][:, where]
 
             for key in ['face', 'fieldvar', 'index', 'node']:

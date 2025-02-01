@@ -143,6 +143,9 @@ These specify the node number, field variable, and coordinates in 1-3D of each d
 which describes the two nodes, the field quantities `w`, `phi` (repeated on each node), and the coordinates of each degree of freedom.
 The coordinates are given in `x` and `y` with two lists for demonstrative purposes. Only the first is required for this 1D model. 
 
+NOTE: It is important that the waveguide axis is correctly chosen. By default the first axis in the coordinate set is used as the waveguide axis. 
+If your mesh information contains coordinates `[x_arr, y_arr, z_arr]` for example, and `z_arr` is the waveguide axis, then set `axis = 2` or `axis = -1` when initialising the model. 
+
 The pywfe.Model object can now be created
 
 .. code-block:: python

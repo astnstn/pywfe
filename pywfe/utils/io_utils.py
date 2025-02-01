@@ -14,6 +14,30 @@ import shutil
 
 
 def load(folder, source='local'):
+    '''
+    Load a model from the path to its folder.
+
+    Parameters
+    ----------
+    folder : Path or str
+        The model to load.
+    source : str, optional
+        Where to load the model from. The default is 'local'.
+        If 'database' is chosen, searches for model in the database folder
+        located in the package directory. If 'local' is chosen but not found,
+        searches database.
+
+    Raises
+    ------
+    FileNotFoundError
+        Could not find the model folder.
+
+    Returns
+    -------
+    model : pywfe.Model
+        The pywfe Model object.
+
+    '''
 
     database_path = pywfe.DATABASE_PATH
     local_folder = folder
@@ -57,6 +81,26 @@ def load(folder, source='local'):
 
 
 def save(folder, model, source='local'):
+    '''
+    Saves the model. Only saves mesh information and description, not results.
+
+    Parameters
+    ----------
+    folder : path or str
+        Folder to save the model to. Creates a folder or overwrites if exists.
+    model : pywfe.Model
+        The model to save.
+    source : str, optional
+        Where to save the model to.
+        If 'local' uses current working directory.
+        If 'database' saves in the database folder in the package directory.
+        The default is 'local'.
+
+    Returns
+    -------
+    None.
+
+    '''
 
     database_path = pywfe.DATABASE_PATH
 
@@ -81,6 +125,14 @@ def save(folder, model, source='local'):
 
 
 def database():
+    '''
+    Lists all models in the database
+
+    Returns
+    -------
+    None.
+
+    '''
 
     database_path = pywfe.DATABASE_PATH
 

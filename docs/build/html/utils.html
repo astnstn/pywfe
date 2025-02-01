@@ -51,17 +51,72 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="pywfe.utils.io_utils.load">
 <span class="sig-prename descclassname"><span class="pre">pywfe.utils.io_utils.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.io_utils.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Load a model from the path to its folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>folder</strong><span class="classifier">Path or str</span></dt><dd><p>The model to load.</p>
+</dd>
+<dt><strong>source</strong><span class="classifier">str, optional</span></dt><dd><p>Where to load the model from. The default is ‘local’.
+If ‘database’ is chosen, searches for model in the database folder
+located in the package directory. If ‘local’ is chosen but not found,
+searches database.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>model</strong><span class="classifier">pywfe.Model</span></dt><dd><p>The pywfe Model object.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>FileNotFoundError</dt><dd><p>Could not find the model folder.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pywfe.utils.io_utils.save">
 <span class="sig-prename descclassname"><span class="pre">pywfe.utils.io_utils.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.io_utils.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Saves the model. Only saves mesh information and description, not results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>folder</strong><span class="classifier">path or str</span></dt><dd><p>Folder to save the model to. Creates a folder or overwrites if exists.</p>
+</dd>
+<dt><strong>model</strong><span class="classifier">pywfe.Model</span></dt><dd><p>The model to save.</p>
+</dd>
+<dt><strong>source</strong><span class="classifier">str, optional</span></dt><dd><p>Where to save the model to.
+If ‘local’ uses current working directory.
+If ‘database’ saves in the database folder in the package directory.
+The default is ‘local’.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pywfe.utils.io_utils.database">
 <span class="sig-prename descclassname"><span class="pre">pywfe.utils.io_utils.</span></span><span class="sig-name descname"><span class="pre">database</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.io_utils.database" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Lists all models in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>None.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <span class="target" id="module-pywfe.utils.comsol_loader"></span><section id="comsol-loader">
@@ -140,27 +195,29 @@ an array of frequencies for a pywfe.Model object.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pywfe.utils.frequency_sweep.frequency_sweep">
 <span class="sig-prename descclassname"><span class="pre">pywfe.utils.frequency_sweep.</span></span><span class="sig-name descname"><span class="pre">frequency_sweep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dofs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.utils.frequency_sweep.frequency_sweep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform a sweep over frequency array, extracting specified quatities
+<dd><p>Perform a sweep over frequency array, extracting specified quantities
 at each step. Modal assurance criterion can be used to track modes through
-frequency by modeshape similarity</p>
+frequency by modeshape similarity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>model</strong><span class="classifier">pywfe.Model</span></dt><dd><p>The model to perform the sweep with.</p>
 </dd>
-<dt><strong>f_arr</strong><span class="classifier">np.ndarray float</span></dt><dd><p>frequency array.</p>
+<dt><strong>f_arr</strong><span class="classifier">np.ndarray float</span></dt><dd><p>Frequency array.</p>
 </dd>
-<dt><strong>quantities</strong><span class="classifier">list of str type</span></dt><dd><p>a list of strings specifying the quantities to be calculated.
-These are:
-- phi_plus: the (positive going) eigenvectors
-- excited_amplitudes: see <cite>pywfe.Model.excited_amplitudes</cite>
-- propagated_amplitudes: see <cite>pywfe.Model.propagated_amplitudes</cite>
-- modal_displacements: see <cite>pywfe.Model.modal_displacements</cite>
-- wavenumbers: see <cite>pywfe.Model.wavenumbers</cite>
-- displacements: see <cite>pywfe.Model.displacements</cite>
-- forces: see <cite>pywfe.Model.forces</cite></p>
+<dt><strong>quantities</strong><span class="classifier">list of str</span></dt><dd><p>A list of strings specifying the quantities to be calculated.
+These are:</p>
+<ul class="simple">
+<li><p><cite>phi_plus</cite>: the (positive going) eigenvectors.</p></li>
+<li><p><cite>excited_amplitudes</cite>: see <cite>pywfe.Model.excited_amplitudes</cite>.</p></li>
+<li><p><cite>propagated_amplitudes</cite>: see <cite>pywfe.Model.propagated_amplitudes</cite>.</p></li>
+<li><p><cite>modal_displacements</cite>: see <cite>pywfe.Model.modal_displacements</cite>.</p></li>
+<li><p><cite>wavenumbers</cite>: see <cite>pywfe.Model.wavenumbers</cite>.</p></li>
+<li><p><cite>displacements</cite>: see <cite>pywfe.Model.displacements</cite>.</p></li>
+<li><p><cite>forces</cite>: see <cite>pywfe.Model.forces</cite>.</p></li>
+</ul>
 </dd>
-<dt><strong>x_r</strong><span class="classifier">float, np.ndarray, optional</span></dt><dd><p>response distance(s). The default is 0.</p>
+<dt><strong>x_r</strong><span class="classifier">float, np.ndarray, optional</span></dt><dd><p>Response distance(s). The default is 0.</p>
 </dd>
 <dt><strong>mac</strong><span class="classifier">bool, optional</span></dt><dd><p>Use the modal assurance criterion to sort waves. The default is False.</p>
 </dd>

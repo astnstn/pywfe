@@ -196,7 +196,7 @@ Options are currently ‘transfer_matrix’ or ‘polynomial’.</p>
 <td><p>Creates interactive matplotlib widget to visualise mesh and  inspect degrees of freedom.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pywfe.Model.select_dofs" title="pywfe.Model.select_dofs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_dofs</span></code></a>([fieldvar, where])</p></td>
-<td><p>select the model degrees of freedom that correspond to specified  field variable.</p></td>
+<td><p>Select the model degrees of freedom that correspond to specified  field variable.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pywfe.Model.selection_index" title="pywfe.Model.selection_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">selection_index</span></code></a>(dof)</p></td>
 <td><p>Get the dof indices for a given selection.</p></td>
@@ -613,12 +613,16 @@ Includes Modal Assurance Critereon (MAC) sorting.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pywfe.Model.select_dofs">
 <span class="sig-name descname"><span class="pre">select_dofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywfe.Model.select_dofs" title="Permalink to this definition">¶</a></dt>
-<dd><p>select the model degrees of freedom that correspond to specified 
+<dd><p>Select the model degrees of freedom that correspond to specified 
 field variable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>fieldvar</strong><span class="classifier">str or list, optional</span></dt><dd><p>The fieldvariable or list thereof to select for. The default is None.</p>
+</dd>
+<dt><strong>where</strong><span class="classifier">np.ndarray of type bool, optional</span></dt><dd><p>Optional argument to select specific nodes, same length as coords.
+For example, selecting specific region by [coordinate array] &gt; value.
+The default is None.</p>
 </dd>
 </dl>
 </dd>
