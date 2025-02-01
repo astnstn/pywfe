@@ -4,6 +4,28 @@ comsol_loader
 
 This module contains the functionality needed to convert COMSOL data
 extracted from MATLAB LiveLink into a pywfe.Model class.
+
+To extract the relevant matrices from COMSOL, use the following code
+after `out = model;`
+    
+.. code-block:: matlab
+
+    MA = mphmatrix(model, 'sol1', 'out', {'K', 'D', 'E', 'L', 'Kc', 'Ec', 'Null', 'Nullf'});
+    info = mphxmeshinfo(model)
+
+    fid = fopen("mesh_info.json", 'w');
+    encodedJSON = jsonencode(info); 
+    fprintf(fid, encodedJSON); 
+    fclose('all'); 
+
+    writematrix(MA.K, 'K.txt', 'Delimiter', 'tab');
+    writematrix(MA.E, 'M.txt', 'Delimiter', 'tab');
+
+    writematrix(MA.Kc, 'Kc.txt', 'Delimiter', 'tab');
+    writematrix(MA.Ec, 'Mc.txt', 'Delimiter', 'tab');
+
+    writematrix(MA.Null, 'Null.txt', 'Delimiter', 'tab');
+    writematrix(MA.Nullf, 'Nullf.txt', 'Delimiter', 'tab');
 """
 
 import logging

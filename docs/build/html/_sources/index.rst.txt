@@ -24,7 +24,6 @@ The `pywfe.Model` class provides a high level api to calculate the free and forc
    :maxdepth: 2
    :caption: Contents:
    
-   pywfe
    model
    core
    utils

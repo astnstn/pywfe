@@ -21,8 +21,9 @@
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -39,7 +40,7 @@
 <p>In this example, we’ll go through the process of setting up a model of an <a class="reference external" href="https://en.wikipedia.org/wiki/Euler%E2%80%93Bernoulli_beam_theory">Euler-Bernoulli</a> beam using the <code class="docutils literal notranslate"><span class="pre">pywfe</span></code> package.</p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
-<img alt="descriptive text for accessibility" class="align-center" src="../_images/beam_element.png" />
+<img alt="../_images/beam_element.jpg" class="align-center" src="../_images/beam_element.jpg" />
 <p>An Euler-Bernoulli beam can be described with a finite element approximation giving the mass and stiffness matrices:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\mathbf{M}=\frac{\rho A l}{420}\left[\begin{array}{cccc}
@@ -173,7 +174,7 @@ In this case however there is only one node to look at. The model can now be sav
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;wavenumber (1/m)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="descriptive text for accessibility" class="align-center" src="../_images/beam_dispersion_relation.png" />
+<img alt="../_images/beam_dispersion_relation.PNG" class="align-center" src="../_images/beam_dispersion_relation.PNG" />
 </section>
 <section id="forcing">
 <h3>Forcing<a class="headerlink" href="#forcing" title="Permalink to this heading">¶</a></h3>
@@ -196,7 +197,7 @@ In this case however there is only one node to look at. The model can now be sav
 The <cite>dofs</cite> keyword argument specifies for which degrees of freedom the output should be returned. In this case we want the same dof as the one we’re forcing. The <cite>derivative</cite> keyword argument applies n derivatives in the
 frequency domain, i.e a multiplication of the displacement by <span class="math notranslate nohighlight">\(i \omega\)</span>. So the output of the method call is the transverse velocity at x=0 for a transverse unit point force. This is the mobility of the beam and is compared
 with the analytical solution.</p>
-<img alt="descriptive text for accessibility" class="align-center" src="../_images/beam_transfer_mobility.png" />
+<img alt="../_images/beam_transfer_mobility.PNG" class="align-center" src="../_images/beam_transfer_mobility.PNG" />
 <p>See <a class="reference internal" href="../model.html#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.Model.transfer_function()</span></code></a> for more information</p>
 </section>
 <section id="more-functionality">
@@ -225,7 +226,6 @@ with the analytical solution.</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../pywfe.html">pyWFE Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../model.html">pywfe.Model Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core.html">core</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">utils</a></li>
@@ -268,11 +268,11 @@ with the analytical solution.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, Austen Stone.
+      &#169;2023, Austen Stone.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
       <a href="../_sources/examples/analytical_beam.rst.txt"

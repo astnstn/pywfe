@@ -6,10 +6,11 @@ pywfe.Model Class
 Introduction
 ------------
 
-Brief description of the class and its purpose.
+The pywfe.model class is the main object in this package. It brings together most WFE functionality into a single API. The class represents a waveguide and is initialised with the mesh information for a single segment.
 
-Constructor
------------
+
+Initialisation
+--------------
 
 .. automethod:: pywfe.model.Model.__init__
 
