@@ -4,3 +4,4 @@ pywfe/database/*
 
 # Do not ignore the .gitkeep file
 !pywfe/database/.gitkeep
+!pywfe/database/AXISYM_thin_0pt1pc_damping

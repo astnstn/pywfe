@@ -25,15 +25,6 @@ def mac_matrix(modes_prev, modes_next):
     return mac_matrix
 
 
-# def sorting_indices(modes_prev, modes_next):
-
-#     matrix = mac_matrix(modes_prev, modes_next)
-
-#     # Find sorting order
-#     sorting_order = np.argmax(matrix, axis=1)
-
-#     return sorting_order
-
 def sorting_indices(modes_prev, modes_next):
     matrix = mac_matrix(modes_prev, modes_next)
     sorting_order = np.argmax(matrix, axis=1)
@@ -55,32 +46,6 @@ def sorting_indices(modes_prev, modes_next):
 
     return sorting_order
 
-
-# def sort_wavenumbers(wavenumbers, imag_threshold=None):
-
-#     if imag_threshold:
-
-#         # Apply threshold to find propagating wavenumbers (non-NaN)
-#         is_propagating = np.abs(wavenumbers.imag) <= imag_threshold
-
-#         # Initialize an array to hold the first propagating index for each mode
-#         first_propagating_index = np.full(wavenumbers.shape[1], np.inf)
-
-#         # For each mode, find the first frequency index where it is considered propagating
-#         for mode_index in range(wavenumbers.shape[1]):
-#             propagating_indices = np.where(is_propagating[:, mode_index])[0]
-#             if len(propagating_indices) > 0:
-#                 first_propagating_index[mode_index] = propagating_indices[0]
-
-#         # Sort modes by the first propagating index
-#         sorted_indices = np.argsort(first_propagating_index)
-
-#         return sorted_indices
-
-#     avg_imag = np.mean(np.abs(wavenumbers.imag), axis=0)
-#     sorted_indices = np.argsort(avg_imag)
-
-#     return sorted_indices
 
 def sort_wavenumbers(wavenumbers, imag_threshold=None):
     if imag_threshold is not None:
