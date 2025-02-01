@@ -16,7 +16,7 @@ This Python package applies the WFE method to given mesh data and uses a single 
 
 - Apply harmonic forcing to the system
 
-- Solve response any axial distance
+- Solve response at any axial distance
 
 
 

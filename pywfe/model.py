@@ -319,7 +319,7 @@ class Model:
 
             return self.eigensolution
 
-        # otherwise calculated the eigensolution
+        # otherwise calculate the eigensolution
         else:
             self.frequency = f
 
