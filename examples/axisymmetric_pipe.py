@@ -21,7 +21,7 @@ import pywfe
 # %%
 # load in axisymmetric pipe
 # steel, water filled
-model = pywfe.load("AXISYM_thin_1pc_damping", source='database')
+model = pywfe.load("AXISYM_test_local", source='local')
 
 # %% model description (custom metadata)
 
