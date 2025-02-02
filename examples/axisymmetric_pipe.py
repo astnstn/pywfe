@@ -19,7 +19,8 @@ import pywfe
 
 
 # %%
-
+# load in axisymmetric pipe
+# steel, water filled
 model = pywfe.load("AXISYM_thin_1pc_damping", source='database')
 
 # %% model description (custom metadata)
@@ -98,16 +99,15 @@ fluid_dof_indices = model.selection_index(fluid_dof)
 
 p_max_f = q_max_f[fluid_dof_indices]
 
-#%%
+# %%
 
 plt.plot(fluid_dof['coord'][1], p_max_f[:, [0, 1, 2, 3, 4]])
 
 
-#%%
+# %%
 
 sweep_result = model.frequency_sweep(
-    f_arr, quantities=['wavenumbers', 'phi_plus'], mac = True)
-
+    f_arr, quantities=['wavenumbers', 'phi_plus'], mac=True)
 
 
 # %%
