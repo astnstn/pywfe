@@ -102,15 +102,13 @@ plt.legend(loc='best')
 plt.xlabel("frequency (Hz)")
 plt.ylabel("abs(mobility) (m/(Ns)")
 
-#%%
+# %%
 
-model.description = """Finite element euler beam
+beam_model.description = """Finite element euler beam
 
 steel beam with 0.1x0.1m rectangular cross-section
 maximum frequency 1000 Hz
 """
-#%%
+# %%
 
-
-
-# pywfe.save('analytical_euler_beam', source = 'database')
+pywfe.save('analytical_euler_beam', beam_model, source='database')

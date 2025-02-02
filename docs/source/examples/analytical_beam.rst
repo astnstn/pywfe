@@ -65,7 +65,7 @@ To begin with we define the system parameters
 
     import numpy as np
     import pywfe
-    import matplotlib.pyplot as plots
+    import matplotlib.pyplot as plt
 
     E = 2.1e11  # young mod
     rho = 7850  # density
@@ -145,6 +145,7 @@ The coordinates are given in `x` and `y` with two lists for demonstrative purpos
 
 NOTE: It is important that the waveguide axis is correctly chosen. By default the first axis in the coordinate set is used as the waveguide axis. 
 If your mesh information contains coordinates `[x_arr, y_arr, z_arr]` for example, and `z_arr` is the waveguide axis, then set `axis = 2` or `axis = -1` when initialising the model. 
+See 'Initialisation' in :class:`pywfe.model.Model`. 
 
 The pywfe.Model object can now be created
 
@@ -212,6 +213,7 @@ with the analytical solution.
 
 See :func:`pywfe.Model.transfer_function` for more information
 
+To save the model setup, use :func:`pywfe.utils.io_utils.save`, where it may be saved in either in the current working directory or the database folder inside the package. 
 
 More Functionality
 ++++++++++++++++++
