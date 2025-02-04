@@ -127,8 +127,8 @@ Now the mass and stiffness matrices can be defined
     ])
 
 
-These, along with the 'mesh' information are all that are needed to create the `pywfe.Model` object. The mesh information is given with a dictionary with three keys `node`, `fieldvar` and `coord`.
-These specify the node number, field variable, and coordinates in 1-3D of each degree of freedom in the model. The beam has 4 degrees of freedom, ordered as in the displacement vectors. Thus we define the `dof` dictionary
+These, along with the 'mesh' information are all that are needed to create the :class:`pywfe.Model` object. The mesh information is given with a dictionary with three keys ``node``, ``fieldvar`` and ``coord``.
+These specify the node number, field variable, and coordinates in 1-3D of each degree of freedom in the model. The beam has 4 degrees of freedom, ordered as in the displacement vectors. Thus we define the ``dof`` dictionary
 
 .. code-block:: python
 
@@ -140,12 +140,12 @@ These specify the node number, field variable, and coordinates in 1-3D of each d
     ]
     }
 
-which describes the two nodes, the field quantities `w`, `phi` (repeated on each node), and the coordinates of each degree of freedom.
-The coordinates are given in `x` and `y` with two lists for demonstrative purposes. Only the first is required for this 1D model. 
+which describes the two nodes, the field quantities ``w``, ``phi`` (repeated on each node), and the coordinates of each degree of freedom.
+The coordinates are given in ``x`` and ``y`` with two lists for demonstrative purposes. Only the first is required for this 1D model. 
 
 NOTE: It is important that the waveguide axis is correctly chosen. By default the first axis in the coordinate set is used as the waveguide axis. 
-If your mesh information contains coordinates `[x_arr, y_arr, z_arr]` for example, and `z_arr` is the waveguide axis, then set `axis = 2` or `axis = -1` when initialising the model. 
-See 'Initialisation' in :class:`pywfe.model.Model`. 
+If your mesh information contains coordinates ``[x_arr, y_arr, z_arr]`` for example, and ``z_arr`` is the waveguide axis, then set ``axis = 2`` or ``axis = -1`` when initialising the model. 
+See 'Initialisation' in :class:`pywfe.Model`. 
 
 The pywfe.Model object can now be created
 
@@ -185,7 +185,7 @@ Firstly let's check the dispersion relation with the analytical solution
 Forcing
 +++++++
 
-Forces can be added to degrees of freedom by changing elements of the `Model.force` array. We compare the mobility in the WFE model with the known solution
+Forces can be added to degrees of freedom by changing elements of the :attr:`pywfe.Model.force` array. We compare the mobility in the WFE model with the known solution
 
 .. code-block:: python
 
@@ -203,8 +203,8 @@ Forces can be added to degrees of freedom by changing elements of the `Model.for
     plt.ylabel("abs(mobility) (m/(Ns)")
 
 
-The `transfer_function` method calculates the response over all frequencies at the response distance `x_r`. The response distance can also be a list or array, in which case a higher dimensional array will be returned. 
-The `dofs` keyword argument specifies for which degrees of freedom the output should be returned. In this case we want the same dof as the one we're forcing. The `derivative` keyword argument applies n derivatives in the 
+The :meth:`pywfe.Model.transfer_function` method calculates the response over all frequencies at the response distance ``x_r``. The response distance can also be a list or array, in which case a higher dimensional array will be returned. 
+The ``dofs`` keyword argument specifies for which degrees of freedom the output should be returned. In this case we want the same dof as the one we're forcing. The ``derivative`` keyword argument applies n derivatives in the 
 frequency domain, i.e a multiplication of the displacement by :math:`i \omega`. So the output of the method call is the transverse velocity at x=0 for a transverse unit point force. This is the mobility of the beam and is compared 
 with the analytical solution. 
 
@@ -214,7 +214,7 @@ with the analytical solution.
 See :func:`pywfe.Model.transfer_function` for more information
 
 To save the model for later, use :func:`pywfe.utils.io_utils.save`, where it may be saved in either in the current working directory or the database folder which is located in the user folder by default.
-Before saving you can add a description to the model for easier identification with `beam_model.description = '[description string]'`
+Before saving, you can add a description to the model to store metadata or other information with ``beam_model.description = '[description string]'``.
 
 More Functionality
 ++++++++++++++++++

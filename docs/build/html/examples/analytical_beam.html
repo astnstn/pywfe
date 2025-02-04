@@ -17,6 +17,7 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Axisymmetric Fluid Filled Pipe" href="axisym_fluid_pipe.html" />
     <link rel="prev" title="Examples" href="index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -135,8 +136,8 @@ The dispersion relation for transverse waves is</p>
 <span class="p">])</span>
 </pre></div>
 </div>
-<p>These, along with the ‘mesh’ information are all that are needed to create the <cite>pywfe.Model</cite> object. The mesh information is given with a dictionary with three keys <cite>node</cite>, <cite>fieldvar</cite> and <cite>coord</cite>.
-These specify the node number, field variable, and coordinates in 1-3D of each degree of freedom in the model. The beam has 4 degrees of freedom, ordered as in the displacement vectors. Thus we define the <cite>dof</cite> dictionary</p>
+<p>These, along with the ‘mesh’ information are all that are needed to create the <a class="reference internal" href="../model.html#pywfe.Model" title="pywfe.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pywfe.Model</span></code></a> object. The mesh information is given with a dictionary with three keys <code class="docutils literal notranslate"><span class="pre">node</span></code>, <code class="docutils literal notranslate"><span class="pre">fieldvar</span></code> and <code class="docutils literal notranslate"><span class="pre">coord</span></code>.
+These specify the node number, field variable, and coordinates in 1-3D of each degree of freedom in the model. The beam has 4 degrees of freedom, ordered as in the displacement vectors. Thus we define the <code class="docutils literal notranslate"><span class="pre">dof</span></code> dictionary</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dof</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
     <span class="s1">&#39;fieldvar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;phi&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>
     <span class="s1">&#39;coord&#39;</span><span class="p">:</span> <span class="p">[</span>
@@ -146,11 +147,11 @@ These specify the node number, field variable, and coordinates in 1-3D of each d
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>which describes the two nodes, the field quantities <cite>w</cite>, <cite>phi</cite> (repeated on each node), and the coordinates of each degree of freedom.
-The coordinates are given in <cite>x</cite> and <cite>y</cite> with two lists for demonstrative purposes. Only the first is required for this 1D model.</p>
+<p>which describes the two nodes, the field quantities <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">phi</span></code> (repeated on each node), and the coordinates of each degree of freedom.
+The coordinates are given in <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> with two lists for demonstrative purposes. Only the first is required for this 1D model.</p>
 <p>NOTE: It is important that the waveguide axis is correctly chosen. By default the first axis in the coordinate set is used as the waveguide axis.
-If your mesh information contains coordinates <cite>[x_arr, y_arr, z_arr]</cite> for example, and <cite>z_arr</cite> is the waveguide axis, then set <cite>axis = 2</cite> or <cite>axis = -1</cite> when initialising the model.
-See ‘Initialisation’ in <a class="reference internal" href="../model.html#pywfe.Model" title="pywfe.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pywfe.model.Model</span></code></a>.</p>
+If your mesh information contains coordinates <code class="docutils literal notranslate"><span class="pre">[x_arr,</span> <span class="pre">y_arr,</span> <span class="pre">z_arr]</span></code> for example, and <code class="docutils literal notranslate"><span class="pre">z_arr</span></code> is the waveguide axis, then set <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">2</span></code> or <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">-1</span></code> when initialising the model.
+See ‘Initialisation’ in <a class="reference internal" href="../model.html#pywfe.Model" title="pywfe.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pywfe.Model</span></code></a>.</p>
 <p>The pywfe.Model object can now be created</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">beam_model</span> <span class="o">=</span> <span class="n">pywfe</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 </pre></div>
@@ -181,7 +182,7 @@ In this case however there is only one node to look at. The model can now be sav
 </section>
 <section id="forcing">
 <h3>Forcing<a class="headerlink" href="#forcing" title="Permalink to this heading">¶</a></h3>
-<p>Forces can be added to degrees of freedom by changing elements of the <cite>Model.force</cite> array. We compare the mobility in the WFE model with the known solution</p>
+<p>Forces can be added to degrees of freedom by changing elements of the <a class="reference internal" href="../model.html#pywfe.Model.force" title="pywfe.Model.force"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pywfe.Model.force</span></code></a> array. We compare the mobility in the WFE model with the known solution</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">beam_model</span><span class="o">.</span><span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
 <span class="n">x_r</span> <span class="o">=</span> <span class="mi">0</span>
@@ -196,14 +197,14 @@ In this case however there is only one node to look at. The model can now be sav
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;abs(mobility) (m/(Ns)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <cite>transfer_function</cite> method calculates the response over all frequencies at the response distance <cite>x_r</cite>. The response distance can also be a list or array, in which case a higher dimensional array will be returned.
-The <cite>dofs</cite> keyword argument specifies for which degrees of freedom the output should be returned. In this case we want the same dof as the one we’re forcing. The <cite>derivative</cite> keyword argument applies n derivatives in the
+<p>The <a class="reference internal" href="../model.html#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.transfer_function()</span></code></a> method calculates the response over all frequencies at the response distance <code class="docutils literal notranslate"><span class="pre">x_r</span></code>. The response distance can also be a list or array, in which case a higher dimensional array will be returned.
+The <code class="docutils literal notranslate"><span class="pre">dofs</span></code> keyword argument specifies for which degrees of freedom the output should be returned. In this case we want the same dof as the one we’re forcing. The <code class="docutils literal notranslate"><span class="pre">derivative</span></code> keyword argument applies n derivatives in the
 frequency domain, i.e a multiplication of the displacement by <span class="math notranslate nohighlight">\(i \omega\)</span>. So the output of the method call is the transverse velocity at x=0 for a transverse unit point force. This is the mobility of the beam and is compared
 with the analytical solution.</p>
 <img alt="../_images/beam_transfer_mobility.PNG" class="align-center" src="../_images/beam_transfer_mobility.PNG" />
 <p>See <a class="reference internal" href="../model.html#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.Model.transfer_function()</span></code></a> for more information</p>
 <p>To save the model for later, use <a class="reference internal" href="../utils.html#pywfe.utils.io_utils.save" title="pywfe.utils.io_utils.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.utils.io_utils.save()</span></code></a>, where it may be saved in either in the current working directory or the database folder which is located in the user folder by default.
-Before saving you can add a description to the model for easier identification with <cite>beam_model.description = ‘[description string]’</cite></p>
+Before saving, you can add a description to the model to store metadata or other information with <code class="docutils literal notranslate"><span class="pre">beam_model.description</span> <span class="pre">=</span> <span class="pre">'[description</span> <span class="pre">string]'</span></code>.</p>
 </section>
 <section id="more-functionality">
 <h3>More Functionality<a class="headerlink" href="#more-functionality" title="Permalink to this heading">¶</a></h3>
@@ -236,6 +237,7 @@ Before saving you can add a description to the model for easier identification w
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">utils</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Analytical Beam Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="axisym_fluid_pipe.html">Axisymmetric Fluid Filled Pipe</a></li>
 </ul>
 </li>
 </ul>
@@ -246,6 +248,7 @@ Before saving you can add a description to the model for easier identification w
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Examples</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">Examples</a></li>
+      <li>Next: <a href="axisym_fluid_pipe.html" title="next chapter">Axisymmetric Fluid Filled Pipe</a></li>
   </ul></li>
   </ul></li>
 </ul>
