@@ -9,7 +9,7 @@ The pipe structure modelled as steel with a hysteretic loss factor of 0.1%, the 
 Loading and Inspecting the Model
 --------------------------------
 
-.. image:: model_diagram.jpg
+.. image:: axisym_pipe_imgs/model_diagram.JPG
    :align: center
 
 The pipe model in this example has been saved into the package database, and can be loaded with 
@@ -43,7 +43,7 @@ The model description, which is optionally added before saving returns:
 
 With :meth:`pywfe.Model.see()` the model mesh can be visualised, showing the left face of the segment. In this case, since the model is 2D and axisymmetric, the left face is a line of nodes.
 
-.. image:: axisym_pipe_imgs/model_see.jpg
+.. image:: axisym_pipe_imgs/model_see.JPG
    :align: center 
 
 The ``dof`` attribute contains more information about the degrees of freedom. For example, ``print(set(model.dof['fieldvar']))`` will show the unique field variables in the model which are ``'u', 'w' 'p'``. 
@@ -77,7 +77,7 @@ As with the (:doc:`analytical_beam`), the dispersion curves of the system can be
     plt.xlabel('Frequency (Hz)')
 
 
-.. image:: axisym_pipe_imgs/wavenumber_scatter.jpg
+.. image:: axisym_pipe_imgs/wavenumber_scatter.JPG
    :align: center
 
 The solutions wavenumber solutions are not sorted, and so are plotted as a scatter plot. The phase velocity curves can also be computed with :meth:`pywfe.Model.phase_velocity`.
@@ -95,7 +95,7 @@ In this case, the wavenumbers are already computed, and the phase velocity can b
 
     plt.xlabel('Frequency (Hz)')
 
-.. image:: axisym_pipe_imgs/cp_scatter.jpg
+.. image:: axisym_pipe_imgs/cp_scatter.JPG
    :align: center
 
 
@@ -134,7 +134,7 @@ Now the dispersion relation can be plotted with continuous curves in the wavenum
     plt.xlabel('Frequency (Hz)')
     plt.ylim(0, -50)
 
-.. image:: axisym_pipe_imgs/wavenumber_trace.jpg
+.. image:: axisym_pipe_imgs/wavenumber_trace.JPG
    :align: center
 
 The mode shapes from the frequency sweep have the shape ``(n. frequencies, n. dofs, n.modes)``. 
@@ -219,7 +219,7 @@ The free-wave solutions can now be sorted along the modal axis with
     plt.tight_layout()
     plt.title()
 
-.. image:: axisym_pipe_imgs/first_two_modes.jpg
+.. image:: axisym_pipe_imgs/first_two_modes.JPG
    :align: center
 
 Now all 5 propagating pressure modes at the maximum frequency of interest are plotted:
@@ -254,7 +254,7 @@ Now all 5 propagating pressure modes at the maximum frequency of interest are pl
     plt.ylim(0, 10e3)
     plt.legend(loc='best', ncols=5)
 
-.. image:: axisym_pipe_imgs/all_prop_modes.jpg
+.. image:: axisym_pipe_imgs/all_prop_modes.JPG
    :align: center
 
 
@@ -283,7 +283,7 @@ With this loading added the forced response can be calculated with a number of m
     plt.title(f'frequency: {excitation_frequency} Hz')
 
 
-.. image:: axisym_pipe_imgs/pressure_x0.jpg
+.. image:: axisym_pipe_imgs/pressure_x0.JPG
    :align: center
 
 Or to calculate the radial displacement at the outer wall (the same dof at which the forcing was applied):
@@ -302,7 +302,7 @@ Or to calculate the radial displacement at the outer wall (the same dof at which
     plt.title(f'frequency: {excitation_frequency} Hz')
 
 
-.. image:: axisym_pipe_imgs/displacement_x.jpg
+.. image:: axisym_pipe_imgs/displacement_x.JPG
    :align: center
 
 
@@ -317,7 +317,7 @@ To calculate the input mobility, we use :meth:`pywfe.Model.tranfer_function` at 
     plt.ylabel('input mobility (m/Ns)')
 
 
-.. image:: axisym_pipe_imgs/input_mobility.jpg
+.. image:: axisym_pipe_imgs/input_mobility.JPG
    :align: center
 
 Finally, to allow easier visualisation of results without wrestling with matplotlib, a displacement/pressure field can be saved into the `.vtu` format for loading into ParaView. See :func:`pwfe.save_as_vtk`.
@@ -332,6 +332,6 @@ Here we save the pressure field from 0-2m at an excitation frequency of 4kHz
 
     pywfe.save_as_vtk('pressure field', p_x, x_arr, fluid_dof)
 
-.. image:: axisym_pipe_imgs/paraview_output.jpg
+.. image:: axisym_pipe_imgs/paraview_output.JPG
    :align: center
 

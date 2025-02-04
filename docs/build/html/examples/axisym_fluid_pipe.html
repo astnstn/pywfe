@@ -42,7 +42,7 @@
 The pipe structure modelled as steel with a hysteretic loss factor of 0.1%, the inner radius is 0.2m and the outer radius is 0.21</p>
 <section id="loading-and-inspecting-the-model">
 <h2>Loading and Inspecting the Model<a class="headerlink" href="#loading-and-inspecting-the-model" title="Permalink to this heading">¶</a></h2>
-<img alt="../_images/model_diagram.jpg" class="align-center" src="../_images/model_diagram.jpg" />
+<img alt="../_images/model_diagram.JPG" class="align-center" src="../_images/model_diagram.JPG" />
 <p>The pipe model in this example has been saved into the package database, and can be loaded with</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pywfe</span>
@@ -68,7 +68,7 @@ The pipe structure modelled as steel with a hysteretic loss factor of 0.1%, the 
 </pre></div>
 </div>
 <p>With <a class="reference internal" href="../model.html#pywfe.Model.see" title="pywfe.Model.see"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.see()</span></code></a> the model mesh can be visualised, showing the left face of the segment. In this case, since the model is 2D and axisymmetric, the left face is a line of nodes.</p>
-<img alt="../_images/model_see.jpg" class="align-center" src="../_images/model_see.jpg" />
+<img alt="../_images/model_see.JPG" class="align-center" src="../_images/model_see.JPG" />
 <p>The <code class="docutils literal notranslate"><span class="pre">dof</span></code> attribute contains more information about the degrees of freedom. For example, <code class="docutils literal notranslate"><span class="pre">print(set(model.dof['fieldvar']))</span></code> will show the unique field variables in the model which are <code class="docutils literal notranslate"><span class="pre">'u',</span> <span class="pre">'w'</span> <span class="pre">'p'</span></code>.
 These are the two structural (radial and longitdunal) degrees of freedom in the pipe wall and the pressure in the pipe fluid respectively. Clicking on the nodes displayed with <a class="reference internal" href="../model.html#pywfe.Model.see" title="pywfe.Model.see"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.see()</span></code></a> using an
 interactive matplotlib backend will print information about that node.</p>
@@ -95,7 +95,7 @@ interactive matplotlib backend will print information about that node.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/wavenumber_scatter.jpg" class="align-center" src="../_images/wavenumber_scatter.jpg" />
+<img alt="../_images/wavenumber_scatter.JPG" class="align-center" src="../_images/wavenumber_scatter.JPG" />
 <p>The solutions wavenumber solutions are not sorted, and so are plotted as a scatter plot. The phase velocity curves can also be computed with <a class="reference internal" href="../model.html#pywfe.Model.phase_velocity" title="pywfe.Model.phase_velocity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.phase_velocity()</span></code></a>.
 In this case, the wavenumbers are already computed, and the phase velocity can be calculated via its definition. Only strongly propagating modes are plotted:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">k_prop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
@@ -109,7 +109,7 @@ In this case, the wavenumbers are already computed, and the phase velocity can b
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/cp_scatter.jpg" class="align-center" src="../_images/cp_scatter.jpg" />
+<img alt="../_images/cp_scatter.JPG" class="align-center" src="../_images/cp_scatter.JPG" />
 </section>
 <section id="mode-shapes">
 <h3>Mode Shapes<a class="headerlink" href="#mode-shapes" title="Permalink to this heading">¶</a></h3>
@@ -138,7 +138,7 @@ The positive-going wavenumbers and mode shapes are requested for the frequency s
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/wavenumber_trace.jpg" class="align-center" src="../_images/wavenumber_trace.jpg" />
+<img alt="../_images/wavenumber_trace.JPG" class="align-center" src="../_images/wavenumber_trace.JPG" />
 <p>The mode shapes from the frequency sweep have the shape <code class="docutils literal notranslate"><span class="pre">(n.</span> <span class="pre">frequencies,</span> <span class="pre">n.</span> <span class="pre">dofs,</span> <span class="pre">n.modes)</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sweep_result</span><span class="p">[</span><span class="s1">&#39;phi_plus&#39;</span><span class="p">])</span>
 
@@ -203,7 +203,7 @@ The function <code class="xref py py-func docutils literal notranslate"><span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/first_two_modes.jpg" class="align-center" src="../_images/first_two_modes.jpg" />
+<img alt="../_images/first_two_modes.JPG" class="align-center" src="../_images/first_two_modes.JPG" />
 <p>Now all 5 propagating pressure modes at the maximum frequency of interest are plotted:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frequency_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
@@ -234,7 +234,7 @@ The function <code class="xref py py-func docutils literal notranslate"><span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/all_prop_modes.jpg" class="align-center" src="../_images/all_prop_modes.jpg" />
+<img alt="../_images/all_prop_modes.JPG" class="align-center" src="../_images/all_prop_modes.JPG" />
 </section>
 </section>
 </section>
@@ -258,7 +258,7 @@ The function <code class="xref py py-func docutils literal notranslate"><span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;frequency: </span><span class="si">{</span><span class="n">excitation_frequency</span><span class="si">}</span><span class="s1"> Hz&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/pressure_x0.jpg" class="align-center" src="../_images/pressure_x0.jpg" />
+<img alt="../_images/pressure_x0.JPG" class="align-center" src="../_images/pressure_x0.JPG" />
 <p>Or to calculate the radial displacement at the outer wall (the same dof at which the forcing was applied):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">excitation_frequency</span> <span class="o">=</span> <span class="mi">1000</span>
 
@@ -272,7 +272,7 @@ The function <code class="xref py py-func docutils literal notranslate"><span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;frequency: </span><span class="si">{</span><span class="n">excitation_frequency</span><span class="si">}</span><span class="s1"> Hz&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/displacement_x.jpg" class="align-center" src="../_images/displacement_x.jpg" />
+<img alt="../_images/displacement_x.JPG" class="align-center" src="../_images/displacement_x.JPG" />
 <p>To calculate the input mobility, we use <code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.tranfer_function()</span></code> at <code class="docutils literal notranslate"><span class="pre">x=0</span></code> over a given frequency range with <code class="docutils literal notranslate"><span class="pre">derivative=1</span></code> to return the structural velocity (the input force is 1N)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">input_mobility</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">x_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dofs</span><span class="o">=</span><span class="p">[</span><span class="mi">45</span><span class="p">],</span> <span class="n">derivative</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
@@ -281,10 +281,10 @@ The function <code class="xref py py-func docutils literal notranslate"><span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;input mobility (m/Ns)&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/input_mobility.jpg" class="align-center" src="../_images/input_mobility.jpg" />
+<img alt="../_images/input_mobility.JPG" class="align-center" src="../_images/input_mobility.JPG" />
 <p>Finally, to allow easier visualisation of results without wrestling with matplotlib, a displacement/pressure field can be saved into the <cite>.vtu</cite> format for loading into ParaView. See <code class="xref py py-func docutils literal notranslate"><span class="pre">pwfe.save_as_vtk()</span></code>.
 Here we save the pressure field from 0-2m at an excitation frequency of 4kHz</p>
-<img alt="../_images/paraview_output.jpg" class="align-center" src="../_images/paraview_output.jpg" />
+<img alt="../_images/paraview_output.JPG" class="align-center" src="../_images/paraview_output.JPG" />
 </section>
 </section>
 
