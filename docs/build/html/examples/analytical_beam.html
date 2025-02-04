@@ -80,7 +80,7 @@ The dispersion relation for transverse waves is</p>
 <p>To begin with we define the system parameters</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pywfe</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plots</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="n">E</span> <span class="o">=</span> <span class="mf">2.1e11</span>  <span class="c1"># young mod</span>
 <span class="n">rho</span> <span class="o">=</span> <span class="mi">7850</span>  <span class="c1"># density</span>
@@ -149,7 +149,8 @@ These specify the node number, field variable, and coordinates in 1-3D of each d
 <p>which describes the two nodes, the field quantities <cite>w</cite>, <cite>phi</cite> (repeated on each node), and the coordinates of each degree of freedom.
 The coordinates are given in <cite>x</cite> and <cite>y</cite> with two lists for demonstrative purposes. Only the first is required for this 1D model.</p>
 <p>NOTE: It is important that the waveguide axis is correctly chosen. By default the first axis in the coordinate set is used as the waveguide axis.
-If your mesh information contains coordinates <cite>[x_arr, y_arr, z_arr]</cite> for example, and <cite>z_arr</cite> is the waveguide axis, then set <cite>axis = 2</cite> or <cite>axis = -1</cite> when initialising the model.</p>
+If your mesh information contains coordinates <cite>[x_arr, y_arr, z_arr]</cite> for example, and <cite>z_arr</cite> is the waveguide axis, then set <cite>axis = 2</cite> or <cite>axis = -1</cite> when initialising the model.
+See ‘Initialisation’ in <a class="reference internal" href="../model.html#pywfe.Model" title="pywfe.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">pywfe.model.Model</span></code></a>.</p>
 <p>The pywfe.Model object can now be created</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">beam_model</span> <span class="o">=</span> <span class="n">pywfe</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 </pre></div>
@@ -201,6 +202,8 @@ frequency domain, i.e a multiplication of the displacement by <span class="math 
 with the analytical solution.</p>
 <img alt="../_images/beam_transfer_mobility.PNG" class="align-center" src="../_images/beam_transfer_mobility.PNG" />
 <p>See <a class="reference internal" href="../model.html#pywfe.Model.transfer_function" title="pywfe.Model.transfer_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.Model.transfer_function()</span></code></a> for more information</p>
+<p>To save the model for later, use <a class="reference internal" href="../utils.html#pywfe.utils.io_utils.save" title="pywfe.utils.io_utils.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.utils.io_utils.save()</span></code></a>, where it may be saved in either in the current working directory or the database folder which is located in the user folder by default.
+Before saving you can add a description to the model for easier identification with <cite>beam_model.description = ‘[description string]’</cite></p>
 </section>
 <section id="more-functionality">
 <h3>More Functionality<a class="headerlink" href="#more-functionality" title="Permalink to this heading">¶</a></h3>

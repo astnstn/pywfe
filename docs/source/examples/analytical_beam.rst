@@ -213,7 +213,8 @@ with the analytical solution.
 
 See :func:`pywfe.Model.transfer_function` for more information
 
-To save the model setup, use :func:`pywfe.utils.io_utils.save`, where it may be saved in either in the current working directory or the database folder inside the package. 
+To save the model for later, use :func:`pywfe.utils.io_utils.save`, where it may be saved in either in the current working directory or the database folder which is located in the user folder by default.
+Before saving you can add a description to the model for easier identification with `beam_model.description = '[description string]'`
 
 More Functionality
 ++++++++++++++++++

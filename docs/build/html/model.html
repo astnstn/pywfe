@@ -569,7 +569,17 @@ Includes Modal Assurance Critereon (MAC) sorting.</p>
 </dd>
 <dt><strong>x_r</strong><span class="classifier">float or np.ndarray, optional</span></dt><dd><p>Response distance. The default is 0.</p>
 </dd>
-<dt><strong>quantities</strong><span class="classifier">list, optional</span></dt><dd><p>Quantities to solve for. The default is [‘displacements’].</p>
+<dt><strong>quantities</strong><span class="classifier">list of str</span></dt><dd><p>A list of strings specifying the quantities to be calculated.
+These are:</p>
+<ul class="simple">
+<li><p><cite>phi_plus</cite>: the (positive going) eigenvectors.</p></li>
+<li><p><cite>excited_amplitudes</cite>: see <cite>pywfe.Model.excited_amplitudes</cite>.</p></li>
+<li><p><cite>propagated_amplitudes</cite>: see <cite>pywfe.Model.propagated_amplitudes</cite>.</p></li>
+<li><p><cite>modal_displacements</cite>: see <cite>pywfe.Model.modal_displacements</cite>.</p></li>
+<li><p><cite>wavenumbers</cite>: see <cite>pywfe.Model.wavenumbers</cite>.</p></li>
+<li><p><cite>displacements</cite>: see <cite>pywfe.Model.displacements</cite>.</p></li>
+<li><p><cite>forces</cite>: see <cite>pywfe.Model.forces</cite>.</p></li>
+</ul>
 </dd>
 <dt><strong>mac</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to sort modal quantities according to MAC. The default is False.</p>
 </dd>

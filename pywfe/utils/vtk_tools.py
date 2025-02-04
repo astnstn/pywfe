@@ -1,6 +1,6 @@
 """
 vtk tools
-------
+---------
 
 This module contains functions for sorting/returning data to be visualised
 in ParaView
@@ -131,6 +131,54 @@ def sort_to_vtk(displacements, dof, vtk_fmt=True, fieldmap=None):
 
 
 def save_as_vtk(filename, field_array, x, dof, fieldmap=None):
+    """
+    Save data as a VTK file for visualization in ParaView.
+
+    This function generates a structured point cloud from the given degree-of-freedom (DOF) data and saves 
+    the provided field array in a format that can be visualized using VTK-compatible software like ParaView.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the output VTK file (without the .vtk extension).
+    field_array : np.ndarray
+        The numerical field values to be stored in the VTK file.
+    x : float or array-like
+        The x-coordinate(s) where the field data is defined.
+    dof : dict
+        Dictionary containing the model’s degrees of freedom (DOF) information.
+    fieldmap : dict, optional
+        A dictionary mapping original field variable names to new names for improved readability in visualization.
+        If None, the original field variable names are used. Default is None.
+
+    Returns
+    -------
+    None
+        The function writes a VTK file to disk but does not return a value.
+
+    Notes
+    -----
+    - This function internally calls `generate_coordinates()` to determine the spatial positions of the DOFs.
+    - It uses `sort_to_vtk()` to transform the field data into a VTK-compatible format.
+    - The output can be loaded directly into ParaView for further analysis.
+    - If the model is 2D, the function adds a zero-valued third coordinate (`zz = 0`) to ensure compatibility with VTK.
+
+    Examples
+    --------
+    Save a model's displacement field as a VTK file:
+
+    ```python
+    save_as_vtk("output/displacement_field", displacements, x, model.dof)
+    ```
+
+    With a field variable mapping:
+
+    ```python
+    fieldmap = {"displacement_x": "Ux", "displacement_y": "Uy"}
+    save_as_vtk("output/displacement_field", displacements, x, model.dof, fieldmap=fieldmap)
+    ```
+
+    """
 
     coords = generate_coordinates(dof, x)
     field = sort_to_vtk(field_array, dof, fieldmap=fieldmap)

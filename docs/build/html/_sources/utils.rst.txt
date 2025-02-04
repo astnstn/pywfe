@@ -16,3 +16,6 @@ utils
 
 .. automodule:: pywfe.utils.modal_assurance
    :members:
+
+.. automodule:: pywfe.utils.vtk_tools
+   :members:

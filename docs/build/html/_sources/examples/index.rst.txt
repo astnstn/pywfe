@@ -9,3 +9,4 @@ Here you can find examples that demonstrate how to use the `pywfe` package.
    :maxdepth: 2
 
    analytical_beam
+   axisym_fluid_pipe

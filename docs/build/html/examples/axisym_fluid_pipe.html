@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Axisymmetric Fluid Filled Pipe &#8212; pywfe  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Analytical Beam Example" href="analytical_beam.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="axisymmetric-fluid-filled-pipe">
+<h1>Axisymmetric Fluid Filled Pipe<a class="headerlink" href="#axisymmetric-fluid-filled-pipe" title="Permalink to this heading">¶</a></h1>
+<p>This example details a more complex application of the <code class="docutils literal notranslate"><span class="pre">pywfe</span></code> package to an axisymmetric fluid filled pipe.</p>
+<p>The mesh information was initially generated using COMSOL Multiphysics with cyclic symmetry. As such, the system descibes axisymmetric (otherwise known as <span class="math notranslate nohighlight">\(n=0\)</span>) motion.
+The pipe structure modelled as steel with a hysteretic loss factor of 0.1%, the inner radius is 0.2m and the outer radius is 0.21</p>
+<section id="loading-and-inspecting-the-model">
+<h2>Loading and Inspecting the Model<a class="headerlink" href="#loading-and-inspecting-the-model" title="Permalink to this heading">¶</a></h2>
+<img alt="../_images/model_diagram.jpg" class="align-center" src="../_images/model_diagram.jpg" />
+<p>The pipe model in this example has been saved into the package database, and can be loaded with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pywfe</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">pywfe</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;AXISYM_thick_0pt1pc_damping&quot;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;database&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The model description, which is optionally added before saving returns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">WFE</span> <span class="n">Segment</span> <span class="n">of</span> <span class="n">water</span> <span class="n">filled</span> <span class="n">pipe</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Inner</span> <span class="n">radius</span><span class="p">:</span> <span class="mi">20</span><span class="n">cm</span><span class="p">,</span> <span class="n">Outer</span> <span class="n">radius</span><span class="p">:</span> <span class="mi">21</span><span class="n">cm</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Steel</span> <span class="n">Youngs</span> <span class="n">mod</span><span class="p">:</span> <span class="mf">19.2e10</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">eta_s</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">Poissons</span> <span class="n">ratio</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">Steel</span> <span class="n">density</span><span class="p">:</span> <span class="mi">7850</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Water</span> <span class="n">bulk</span> <span class="n">mod</span><span class="p">:</span> <span class="mf">2.1e9</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">eta_f</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">Water</span> <span class="n">density</span><span class="p">:</span> <span class="mi">1000</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Steel</span> <span class="n">loss</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Water</span> <span class="n">loss</span><span class="o">-</span><span class="n">factor</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">maximum</span> <span class="n">element</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="n">cm</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Outer</span> <span class="n">radial</span> <span class="n">forcing</span> <span class="n">dof</span> <span class="n">index</span><span class="p">:</span> <span class="mi">45</span>
+</pre></div>
+</div>
+<p>With <a class="reference internal" href="../model.html#pywfe.Model.see" title="pywfe.Model.see"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.see()</span></code></a> the model mesh can be visualised, showing the left face of the segment. In this case, since the model is 2D and axisymmetric, the left face is a line of nodes.</p>
+<img alt="../_images/model_see.jpg" class="align-center" src="../_images/model_see.jpg" />
+<p>The <code class="docutils literal notranslate"><span class="pre">dof</span></code> attribute contains more information about the degrees of freedom. For example, <code class="docutils literal notranslate"><span class="pre">print(set(model.dof['fieldvar']))</span></code> will show the unique field variables in the model which are <code class="docutils literal notranslate"><span class="pre">'u',</span> <span class="pre">'w'</span> <span class="pre">'p'</span></code>.
+These are the two structural (radial and longitdunal) degrees of freedom in the pipe wall and the pressure in the pipe fluid respectively. Clicking on the nodes displayed with <a class="reference internal" href="../model.html#pywfe.Model.see" title="pywfe.Model.see"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.see()</span></code></a> using an
+interactive matplotlib backend will print information about that node.</p>
+</section>
+<section id="free-wave-solutions">
+<h2>Free Wave Solutions<a class="headerlink" href="#free-wave-solutions" title="Permalink to this heading">¶</a></h2>
+<section id="dispersion-curves">
+<h3>Dispersion Curves<a class="headerlink" href="#dispersion-curves" title="Permalink to this heading">¶</a></h3>
+<p>As with the (<a class="reference internal" href="analytical_beam.html"><span class="doc">Analytical Beam Example</span></a>), the dispersion curves of the system can be calculated:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">10e3</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dispersion_relation</span><span class="p">(</span><span class="n">f_arr</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Re(k)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Im(k)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/wavenumber_scatter.jpg" class="align-center" src="../_images/wavenumber_scatter.jpg" />
+<p>The solutions wavenumber solutions are not sorted, and so are plotted as a scatter plot. The phase velocity curves can also be computed with <a class="reference internal" href="../model.html#pywfe.Model.phase_velocity" title="pywfe.Model.phase_velocity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.phase_velocity()</span></code></a>.
+In this case, the wavenumbers are already computed, and the phase velocity can be calculated via its definition. Only strongly propagating modes are plotted:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">k_prop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="n">k_prop</span><span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="n">c_p</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_arr</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">/</span><span class="n">k_prop</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">c_p</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">8e3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/cp_scatter.jpg" class="align-center" src="../_images/cp_scatter.jpg" />
+</section>
+<section id="mode-shapes">
+<h3>Mode Shapes<a class="headerlink" href="#mode-shapes" title="Permalink to this heading">¶</a></h3>
+<p>Also of interest for the free-wave solutions are the mode shapes. These could be calculated for each frequency with <a class="reference internal" href="../model.html#pywfe.Model.generate_eigensolution" title="pywfe.Model.generate_eigensolution"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.generate_eigensolution()</span></code></a>, which gives the raw eigensolution.
+Instead, it is convenient to use the <a class="reference internal" href="../model.html#pywfe.Model.frequency_sweep" title="pywfe.Model.frequency_sweep"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.frequency_sweep()</span></code></a> method, which allows many different frequency dependent quantities to be solved together with each frequency step.
+The positive-going wavenumbers and mode shapes are requested for the frequency sweep, and are stored in a dictionary.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sweep_result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">frequency_sweep</span><span class="p">(</span>
+<span class="n">f_arr</span><span class="p">,</span> <span class="n">quantities</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wavenumbers&#39;</span><span class="p">,</span> <span class="s1">&#39;phi_plus&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>NOTE</strong>: The <a class="reference internal" href="../model.html#pywfe.Model.frequency_sweep" title="pywfe.Model.frequency_sweep"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.frequency_sweep()</span></code></a> method allows the <cite>modal assurance criterion</cite> to be used to track each mode across sufficiently fine frequency steps.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sweep_result</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">frequency_sweep</span><span class="p">(</span>
+<span class="n">f_arr</span><span class="p">,</span> <span class="n">quantities</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wavenumbers&#39;</span><span class="p">,</span> <span class="s1">&#39;phi_plus&#39;</span><span class="p">],</span> <span class="n">mac</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now the dispersion relation can be plotted with continuous curves in the wavenumber domain:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">sweep_result</span><span class="p">[</span><span class="s1">&#39;wavenumbers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Re(k)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">sweep_result</span><span class="p">[</span><span class="s1">&#39;wavenumbers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Im(k)&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/wavenumber_trace.jpg" class="align-center" src="../_images/wavenumber_trace.jpg" />
+<p>The mode shapes from the frequency sweep have the shape <code class="docutils literal notranslate"><span class="pre">(n.</span> <span class="pre">frequencies,</span> <span class="pre">n.</span> <span class="pre">dofs,</span> <span class="pre">n.modes)</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sweep_result</span><span class="p">[</span><span class="s1">&#39;phi_plus&#39;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">phi</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">94</span><span class="p">,</span> <span class="mi">47</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first half of the dof axis represents the free-wave modal displacements, and the second half the forces. We select just the displacement part of the mode shapes with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># get just the displacement component of the mode shapes by slicing down the second axis</span>
+<span class="n">phi_q</span> <span class="o">=</span> <span class="n">phi</span><span class="p">[:,</span> <span class="p">:</span><span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+</pre></div>
+</div>
+<section id="selecting-degrees-of-freedom">
+<h4>Selecting Degrees of Freedom<a class="headerlink" href="#selecting-degrees-of-freedom" title="Permalink to this heading">¶</a></h4>
+<p>The displacement mode shapes contain both the structural displacements and pressures. To separate these out, the method <a class="reference internal" href="../model.html#pywfe.Model.select_dofs" title="pywfe.Model.select_dofs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.select_dofs()</span></code></a> is provided.
+The dofs are selected by their field variable with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">struc_dof</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">select_dofs</span><span class="p">(</span><span class="n">fieldvar</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">])</span>
+<span class="n">fluid_dof</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">select_dofs</span><span class="p">(</span><span class="n">fieldvar</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which returns a reduced dof dictionary for each selection. To select the part the corresponding part of the mode shape array, <code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.dof_to_indices()</span></code> is used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fluid_dof_indices</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dof_to_indices</span><span class="p">(</span><span class="n">fluid_dof</span><span class="p">)</span>
+<span class="n">phi_p</span> <span class="o">=</span> <span class="n">phi_q</span><span class="p">[</span><span class="n">fluid_dof_indices</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">phi_p</span></code> now represents the <em>pressure</em> mode shapes.</p>
+<section id="mode-sorting">
+<h5>Mode Sorting<a class="headerlink" href="#mode-sorting" title="Permalink to this heading">¶</a></h5>
+<p>Before plotting the mode shapes, There is one more useful function for sorting the free-wave solutions.
+The function <code class="xref py py-func docutils literal notranslate"><span class="pre">pywfe.sort_wavenumbers()</span></code> can be used on a wavenumber solution to produce sorted indices for modes according to their order of cut-on.</p>
+<p>The free-wave solutions can now be sorted along the modal axis with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sorted_mode_indices</span> <span class="o">=</span> <span class="n">pywfe</span><span class="o">.</span><span class="n">sort_wavenumbers</span><span class="p">(</span><span class="n">sweep_result</span><span class="p">[</span><span class="s1">&#39;wavenumbers&#39;</span><span class="p">])</span>
+
+<span class="n">k_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sweep_result</span><span class="p">[</span><span class="s1">&#39;wavenumbers&#39;</span><span class="p">])[</span><span class="o">...</span><span class="p">,</span> <span class="n">sorted_mode_indices</span><span class="p">]</span>
+<span class="n">phi_p_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">phi_p</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">sorted_mode_indices</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">np.copy</span></code> is used to keep the sorted and unsorted solutions separate to avoid confusion. The pressure mode shapes for the first two propagating modes are now plotted at a low frequency:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">radial_coord</span> <span class="o">=</span> <span class="n">fluid_dof</span><span class="p">[</span><span class="s1">&#39;coord&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">frequency_index</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">for</span> <span class="n">mode_index</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">radial_coord</span><span class="p">,</span> <span class="n">phi_p_sorted</span><span class="p">[</span><span class="n">frequency_index</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode_index</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;radial coordinate (m)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;pressure (arb)&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_arr</span> <span class="o">/</span>
+            <span class="n">k_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">mode_index</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;mode </span><span class="si">{</span><span class="n">mode_index</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">f_arr</span><span class="p">[</span><span class="n">frequency_index</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;frequency (Hz)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Phase velocity (m/s)&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Frequency: </span><span class="si">{</span><span class="n">f_arr</span><span class="p">[</span><span class="n">frequency_index</span><span class="p">]</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> Hz&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/first_two_modes.jpg" class="align-center" src="../_images/first_two_modes.jpg" />
+<p>Now all 5 propagating pressure modes at the maximum frequency of interest are plotted:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frequency_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="c1"># plot only the propagating wavenumbers</span>
+<span class="n">k_sorted_propagating</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">k_sorted</span><span class="p">)</span>
+<span class="n">k_sorted_propagating</span><span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">k_sorted</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="k">for</span> <span class="n">mode_index</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">radial_coord</span><span class="p">,</span> <span class="n">phi_p_sorted</span><span class="p">[</span><span class="n">frequency_index</span><span class="p">,</span> <span class="p">:,</span> <span class="n">mode_index</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;radial coordinate (m)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;pressure (arb)&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_arr</span> <span class="o">/</span>
+            <span class="n">k_sorted_propagating</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">mode_index</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mode_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">f_arr</span><span class="p">[</span><span class="n">frequency_index</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;frequency (Hz)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Phase velocity (m/s)&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10e3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/all_prop_modes.jpg" class="align-center" src="../_images/all_prop_modes.jpg" />
+</section>
+</section>
+</section>
+</section>
+<section id="model-forcing">
+<h2>Model Forcing<a class="headerlink" href="#model-forcing" title="Permalink to this heading">¶</a></h2>
+<p>We now add a radial force to the outer pipe wall with the appropriate degree of freedom.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># add a 1 newton radial force to the outer pipe wall</span>
+<span class="n">model</span><span class="o">.</span><span class="n">force</span><span class="p">[</span><span class="mi">45</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>With this loading added the forced response can be calculated with a number of methods. For example, to calculate the pressure field at <code class="docutils literal notranslate"><span class="pre">x=0</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the pressure across the the radial coordinate at x=0</span>
+<span class="n">excitation_frequency</span> <span class="o">=</span> <span class="mf">15e3</span>
+
+<span class="n">p0</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">displacements</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">excitation_frequency</span><span class="p">,</span> <span class="n">x_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dofs</span><span class="o">=</span><span class="n">fluid_dof</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">radial_coord</span><span class="p">,</span> <span class="n">p0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;radial coordinate (m)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;pressure (Pa)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;frequency: </span><span class="si">{</span><span class="n">excitation_frequency</span><span class="si">}</span><span class="s1"> Hz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/pressure_x0.jpg" class="align-center" src="../_images/pressure_x0.jpg" />
+<p>Or to calculate the radial displacement at the outer wall (the same dof at which the forcing was applied):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">excitation_frequency</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="n">x_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">u_x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">displacements</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">excitation_frequency</span><span class="p">,</span> <span class="n">x_r</span><span class="o">=</span><span class="n">x_arr</span><span class="p">,</span> <span class="n">dofs</span><span class="o">=</span><span class="p">[</span><span class="mi">45</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_arr</span><span class="p">,</span> <span class="n">u_x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;axial coordinate (m)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;displacement (m)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;frequency: </span><span class="si">{</span><span class="n">excitation_frequency</span><span class="si">}</span><span class="s1"> Hz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/displacement_x.jpg" class="align-center" src="../_images/displacement_x.jpg" />
+<p>To calculate the input mobility, we use <code class="xref py py-meth docutils literal notranslate"><span class="pre">pywfe.Model.tranfer_function()</span></code> at <code class="docutils literal notranslate"><span class="pre">x=0</span></code> over a given frequency range with <code class="docutils literal notranslate"><span class="pre">derivative=1</span></code> to return the structural velocity (the input force is 1N)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">input_mobility</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="n">x_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dofs</span><span class="o">=</span><span class="p">[</span><span class="mi">45</span><span class="p">],</span> <span class="n">derivative</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">f_arr</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">input_mobility</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;input mobility (m/Ns)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/input_mobility.jpg" class="align-center" src="../_images/input_mobility.jpg" />
+<p>Finally, to allow easier visualisation of results without wrestling with matplotlib, a displacement/pressure field can be saved into the <cite>.vtu</cite> format for loading into ParaView. See <code class="xref py py-func docutils literal notranslate"><span class="pre">pwfe.save_as_vtk()</span></code>.
+Here we save the pressure field from 0-2m at an excitation frequency of 4kHz</p>
+<img alt="../_images/paraview_output.jpg" class="align-center" src="../_images/paraview_output.jpg" />
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pywfe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../model.html">pywfe.Model Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core.html">core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analytical_beam.html">Analytical Beam Example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Axisymmetric Fluid Filled Pipe</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Examples</a><ul>
+      <li>Previous: <a href="analytical_beam.html" title="previous chapter">Analytical Beam Example</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, Austen Stone.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/examples/axisym_fluid_pipe.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

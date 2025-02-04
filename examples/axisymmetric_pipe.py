@@ -1,37 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pywfe
-# import wavepype.toolbox as tb
-# from scipy.fft import rfft, irfft
-# import scienceplots
-# from wavepype import plottools
-# from study import *
-
-# plt.style.use(['science', 'bright'])
-
-
-# def remove_jumps(arr, threshold):
-#     diff_arr = np.diff(arr, axis=0)
-#     jumps = np.abs(diff_arr) > threshold
-#     arr[:-1][jumps] = np.nan
-#     arr[1:][jumps] = np.nan
-#     return arr
-
 
 # %%
 # load in axisymmetric pipe
 # steel, water filled
-model = pywfe.load("AXISYM_test_local", source='local')
+model = pywfe.load("AXISYM_thin_0pt1pc_damping", source='database')
 
 # %% model description (custom metadata)
 
 print(model.description)
-
-
-# %% show unique x axis variables
-
-print(set(model.dof['coord'][0]))
-
 
 # %% show unique fieldvariables
 
@@ -41,13 +19,14 @@ print(set(model.dof['fieldvar']))
 
 model.see()
 
-# %% dispersion relation
+# %% dispersion relation, unsorted wavenumber solutions
 
 f_arr = np.linspace(10, 10e3, 300)
 
 k = model.dispersion_relation(f_arr)
 
 # %%
+
 plt.subplot(2, 1, 1)
 plt.plot(f_arr, k.real, '.')
 plt.ylabel('Re(k)')
@@ -56,31 +35,54 @@ plt.subplot(2, 1, 2)
 plt.plot(f_arr, k.imag, '.')
 plt.ylabel('Im(k)')
 
+plt.xlabel('Frequency (Hz)')
+
 plt.ylim(0, -50)
 
-
 # %%
+
+k_prop = np.copy(k)
+k_prop[abs(k.imag) > 0.5] = np.nan
+
+c_p = 2*np.pi*f_arr[:, None]/k_prop
+
+plt.plot(f_arr, c_p, '.')
+plt.ylim(0, 8e3)
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Phase velocity (m/s)')
+
+# %% frequency sweep, obtaining multiple parameters
 
 sweep_result = model.frequency_sweep(
-    f_arr, quantities=['wavenumbers', 'phi_plus'])
+    f_arr, quantities=['wavenumbers', 'phi_plus'], mac=True)
+
+# %%
+
+plt.subplot(2, 1, 1)
+plt.plot(f_arr, sweep_result['wavenumbers'].real)
+plt.ylabel('Re(k)')
+plt.ylim(0, 50)
+plt.subplot(2, 1, 2)
+plt.plot(f_arr, sweep_result['wavenumbers'].imag)
+plt.ylabel('Im(k)')
+
+plt.ylim(0, -50)
+
+# %%
 
 
 # %%
 
-phi = sweep_result['phi_plus']
+phi = np.copy(sweep_result['phi_plus'])
 
+# (n_freqs, n_dofs, n_modes)
+# (first half of n_dofs is displacements, second is forces)
 print(phi.shape)
 
-phi_max_f = phi[-1]
 
-print(phi_max_f.shape)
-
-# first axis represents the degrees of freedom.
-# the first half of this axis is displacement, the second half is force
-
-# second axis represents the mode number
-
-q_max_f = phi_max_f[:model.N//2]
+# get just the displacement component of the mode shapes
+phi_q = phi[:, :model.N//2, :]
+phi_f = phi[:, model.N//2:, :]
 
 # %% selecting dof regions by field variable
 
@@ -88,92 +90,123 @@ struc_dof = model.select_dofs(fieldvar=['u', 'w'])
 fluid_dof = model.select_dofs(fieldvar='p')
 
 # %%
-radial_coord = model.dof['coord'][1]
-radial_outer_wall_dof = model.select_dofs(
-    fieldvar=['u', 'v'], where=radial_coord == 0.2)
+
+fluid_dof_indices = model.dofs_to_indices(fluid_dof)
+
+phi_p = phi_q[:, fluid_dof_indices, :]
 
 
 # %%
 
-fluid_dof_indices = model.selection_index(fluid_dof)
+sorted_mode_indices = pywfe.sort_wavenumbers(sweep_result['wavenumbers'])
 
-p_max_f = q_max_f[fluid_dof_indices]
-
-# %%
-
-plt.plot(fluid_dof['coord'][1], p_max_f[:, [0, 1, 2, 3, 4]])
+k_sorted = np.copy(sweep_result['wavenumbers'])[..., sorted_mode_indices]
+phi_p_sorted = np.copy(phi_p)[..., sorted_mode_indices]
 
 
 # %%
 
-sweep_result = model.frequency_sweep(
-    f_arr, quantities=['wavenumbers', 'phi_plus'], mac=True)
+radial_coord = fluid_dof['coord'][1]
+frequency_index = 10
+
+for mode_index in [0, 1]:
+
+    plt.subplot(2, 1, 1)
+
+    plt.plot(radial_coord, phi_p_sorted[frequency_index, :, mode_index])
+    plt.axhline(y=0, color='black', linestyle=':')
+    plt.xlabel('radial coordinate (m)')
+    plt.ylabel('pressure (arb)')
+
+    plt.subplot(2, 1, 2)
+
+    plt.plot(f_arr, 2*np.pi*f_arr /
+             k_sorted[..., mode_index], label=f'{mode_index + 1}')
+    plt.axvline(x=f_arr[frequency_index], color='black')
+    plt.xlabel('frequency (Hz)')
+    plt.ylabel('Phase velocity (m/s)')
+
+plt.legend(loc='best')
+plt.suptitle(f'Frequency: {f_arr[frequency_index]:.0f} Hz')
+plt.tight_layout()
+plt.title()
+
+# %%
+
+frequency_index = -1
+
+k_sorted_propagating = np.copy(k_sorted)
+k_sorted_propagating[abs(k_sorted.imag) > 0.5] = np.nan
+
+for mode_index in [0, 1, 2, 3, 4]:
+
+    plt.subplot(2, 1, 1)
+
+    plt.plot(radial_coord, phi_p_sorted[frequency_index, :, mode_index])
+    plt.axhline(y=0, color='black', linestyle=':')
+    plt.xlabel('radial coordinate (m)')
+    plt.ylabel('pressure (arb)')
+
+    plt.subplot(2, 1, 2)
+
+    plt.plot(f_arr, 2*np.pi*f_arr /
+             k_sorted_propagating[..., mode_index], label=f'{mode_index + 1}')
+
+    plt.axvline(x=f_arr[frequency_index], color='black')
+    plt.xlabel('frequency (Hz)')
+    plt.ylabel('Phase velocity (m/s)')
+
+plt.subplot(2, 1, 2)
+plt.ylim(0, 10e3)
+plt.legend(loc='best', ncols=5)
+
+# %%
+
+# add a 1 newton radial force to the outer pipe wall
+model.force[45] = 1
 
 
 # %%
 
+# plot the pressure across the the radial coordinate at x=0
+excitation_frequency = 15e3
 
-# thick = pywfe.load("AXISYM_thick_1pc_damping", source='database')
+p0 = model.displacements(f=excitation_frequency, x_r=0, dofs=fluid_dof)
 
-# f_arr = np.linspace(20, 20e3, 500)
+plt.plot(radial_coord, p0)
+plt.xlabel('radial coordinate (m)')
+plt.ylabel('pressure (Pa)')
+plt.title(f'frequency: {excitation_frequency} Hz')
 
-# k_thin = thin.frequency_sweep(f_arr, quantities=['wavenumbers'], mac=True)[
-#     'wavenumbers']
+# %%
 
-# k_thick = thick.frequency_sweep(f_arr, quantities=['wavenumbers'], mac=True)[
-#     'wavenumbers']
+excitation_frequency = 1000
 
-# # %%
+x_arr = np.linspace(0, 100, 1000)
 
-# k_thin = k_thin[:, pywfe.sort_wavenumbers(k_thin)]
-# k_thick = k_thick[:, pywfe.sort_wavenumbers(k_thick)]
+u_x = model.displacements(f=excitation_frequency, x_r=x_arr, dofs=[45])
 
-# k_thin[:, [0, 1]] = k_thin[:, [1, 0]]
-
-# # %%
-
-# k_thin[abs(k_thin.imag) > 0.6] = np.nan
-# k_thick[abs(k_thick.imag) > 0.6] = np.nan
-
-# # %%
-
-# a_thin = -20*np.log10(np.e)*k_thin.imag
-# a_thick = -20*np.log10(np.e)*k_thick.imag
-
-# # %%
-# threshold = 0.3
-# for i in range(10):
-#     a_thin[:, i] = remove_jumps(a_thin[:, i], threshold)
-#     a_thick[:, i] = remove_jumps(a_thick[:, i], threshold)
-# # %%
-# plt.plot(f_arr/1e3, a_thick[:, :10],
-#          color='grey', alpha=0.5, linewidth=0.6)
-# plt.plot(f_arr/1e3, a_thin[:, :10])
+plt.plot(x_arr, u_x)
+plt.xlabel('axial coordinate (m)')
+plt.ylabel('displacement (m)')
+plt.title(f'frequency: {excitation_frequency} Hz')
 
 
-# plt.xlabel("Frequency (kHz)")
-# plt.ylabel("Attenuation (dB/m)")
+# %%
 
-# plottools.frac_max_width(0.8)
-# plottools.limits()
-# plottools.trim_width()
+input_mobility = model.transfer_function(f_arr, x_r=0, dofs=[45], derivative=1)
 
-# plt.savefig("attenuation_thin.pdf")
+# %%
 
-# # %%
-# plt.figure()
+plt.semilogy(f_arr, abs(input_mobility))
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('input mobility (m/Ns)')
 
-# plt.plot(f_arr/1e3, a_thin[:, :10])
-# plt.gca().set_prop_cycle(None)
-# plt.plot(f_arr/1e3, a_thick[:, :10],
-#          alpha=0.6, linewidth=1, linestyle='--')
+# %%
 
+excitation_frequency = 4e3
+x_arr = np.linspace(0, 2, 400)
 
-# plt.xlabel("Frequency (kHz)")
-# plt.ylabel("Attenuation (dB/m)")
+p_x = model.displacements(f=excitation_frequency, x_r=x_arr, dofs=fluid_dof)
 
-# plottools.frac_max_width(0.8)
-# plottools.limits()
-# plottools.trim_width()
-
-# plt.savefig("attenuation.pdf")
+pywfe.save_as_vtk('pressure field', p_x, x_arr, fluid_dof)
