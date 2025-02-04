@@ -9,7 +9,7 @@ The pipe structure modelled as steel with a hysteretic loss factor of 0.1%, the 
 Loading and Inspecting the Model
 --------------------------------
 
-.. image:: ./axisym_pipe_imgs/model_diagram.jpg
+.. image:: model_diagram.jpg
    :align: center
 
 The pipe model in this example has been saved into the package database, and can be loaded with 
